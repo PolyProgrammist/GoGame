@@ -1,6 +1,9 @@
-import socket               # Import socket module
+import pygame
 import threading
-from clar import GoState
+import socket
+import sys
+import GoState
+import GoClientConnect
 
 class Client:
     name = ''
@@ -10,13 +13,13 @@ class Client:
         self.authorized = False
         self.running = True
         self.playing = False
-        self.set_name(self.addr)
+        self.set_name(str(self.addr))
     def set_name(self, s):
         if not self.authorized:
             self.name = s
             self.authorized = True
 
-class Server:
+class GoServer:
     clients = {}
     states = {}
     def __init__(self):
@@ -48,23 +51,23 @@ class Server:
             if t != "":
                 print(str(cl.addr) + ' ::  ' + t + '  ' + str(len(t)))
                 if t.find("auth") == 0:
-                    cl.set_name(t[6:])
+                    cl.set_name(t[5:])
                 if cl.authorized:
                     if t.find("connect") == 0:
-                        op = t[9:]
+                        op = t[8:]
                         name1 = cl.name
                         name2 = op
                         self.snd(self.clients[name1].c, 'connect')
                         self.snd(self.clients[name2].c, 'connect')
 
-                        state = GoState(name1, name2)
+                        state = GoState.GoState(name1, name2)
                         self.states[name1] = state
                         self.states[name2] = state
                         self.clients[name2].playing = True
                         self.clients[name1].playing = True
                     if t.find("go") == 0 and cl.playing:
-                        ind = t.find(' ', 4)
-                        one = int(t[4:ind])
+                        ind = t.find(' ', 3)
+                        one = int(t[3:ind])
                         two = int(t[ind + 1:])
                         if self.states[cl.name].try_pas(one, two):
                             self.snd(self.clients[self.states[cl.name].name2], t)
@@ -85,16 +88,18 @@ class Server:
         self.s.close()
 
     def snd(self, s, st):
+        print('sended ' + st)
         s.send(bytearray(st, 'utf-8'))
     def rcv(self, s):
         while self.working:
             try:
                 t = str(s.recv(1024), 'utf-8')
                 if len(t):
+                    print('received ' + t)
                     return t
             except:
                 return ""
 
 
 if __name__ == "__main__":
-    Server()
+    GoServer()

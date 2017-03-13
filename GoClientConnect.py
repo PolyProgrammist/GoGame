@@ -1,9 +1,10 @@
-import socket               # Import socket module
+import pygame
 import threading
-import time
-from clar import *
+import socket
+import sys
+import GoUI
 
-class GoClient:
+class GoClientConnect:
     def __init__(self):
         self.s = socket.socket()         # Create a socket object
         host = socket.gethostname() # Get local machine name
@@ -14,12 +15,14 @@ class GoClient:
         threading.Thread(target=self.receiving).start()
 
     def snd(self, st):
+        print('sended ' + st)
         self.s.send(bytearray(st, 'utf-8'))
     def rcv(self):
         while self.working:
             try:
                 t = str(self.s.recv(1024), 'utf-8')
                 if len(t):
+                    print('received ' + t)
                     return t
             except:
                 self.finish()
@@ -36,12 +39,11 @@ class GoClient:
     def receiving(self):
         while self.working:
             t = self.rcv()
-            self.define_received(t)
             print(t)
             if (t == 'end'):
                 self.finish()
             if (t == 'connect'):
-                self.goui = GoUI()
+                self.goui = GoUI.GoUI(self)
             if (t.find('go') == 0):
                 ind = t.find(' ', 4)
                 one = int(t[4:ind])
@@ -51,6 +53,8 @@ class GoClient:
     def finish(self):
         self.working = False
         self.s.close()
+    def go(self, t):
+        self.snd('go ' + str(t[0]) + ' ' + str(t[1]))
 
 if __name__ == "__main__":
-    Client()
+    GoClientConnect()

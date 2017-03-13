@@ -1,8 +1,12 @@
 import pygame
-
+import threading
+import socket
+import sys
+import GoState
+import GoClientConnect
 
 class GoUI:
-    gost = GoState();
+    gost = GoState.GoState()
     board_color = (0xC0, 0x40, 0x0)
     score_display_height = 50
     board_display_size = 700
@@ -19,9 +23,10 @@ class GoUI:
     stone_radius = (int) ((cell_size * stone_diameter_fix) / 2)
     board_places = gost.board_size + 1
 
-    def __init__(self):
+    def __init__(self, goclcon):
         self.init_screen()
         self.gost.now_color = 1 #black
+        self.goclcon = goclcon
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -34,7 +39,7 @@ class GoUI:
                     pygame.display.update()
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     t = self.analyze_pos(event.pos)
-                    self.dolol
+                    self.goclcon.go(t)
                     # if (self.gost.try_pas(t)):
                     #     self.redraw_background()
                     #     pygame.display.update()
