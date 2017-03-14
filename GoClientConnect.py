@@ -45,10 +45,10 @@ class GoClientConnect:
             if (t == 'connect'):
                 self.goui = GoUI.GoUI(self)
             if (t.find('go') == 0):
-                ind = t.find(' ', 4)
-                one = int(t[4:ind])
+                ind = t.find(' ', 3)
+                one = int(t[3:ind])
                 two = int(t[ind + 1:])
-                self.goui.gost.try_pas(one, two)
+                self.goui.letsgo((one, two))
 
     def finish(self):
         self.working = False

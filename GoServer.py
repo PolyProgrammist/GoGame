@@ -13,7 +13,7 @@ class Client:
         self.authorized = False
         self.running = True
         self.playing = False
-        self.set_name(str(self.addr))
+        self.name = (str(self.addr))
     def set_name(self, s):
         if not self.authorized:
             self.name = s
@@ -49,9 +49,11 @@ class GoServer:
         while self.working:
             t = self.rcv(cl.c)
             if t != "":
-                print(str(cl.addr) + ' ::  ' + t + '  ' + str(len(t)))
+                print(cl.name + ' ::  ' + t + '  ' + str(len(t)))
                 if t.find("auth") == 0:
+                    del self.clients[cl.name]
                     cl.set_name(t[5:])
+                    self.clients[cl.name] = cl
                 if cl.authorized:
                     if t.find("connect") == 0:
                         op = t[8:]
@@ -69,9 +71,9 @@ class GoServer:
                         ind = t.find(' ', 3)
                         one = int(t[3:ind])
                         two = int(t[ind + 1:])
-                        if self.states[cl.name].try_pas(one, two):
-                            self.snd(self.clients[self.states[cl.name].name2], t)
-                            self.snd(self.clients[self.states[cl.name].name2], t)
+                        if self.states[cl.name].try_pas((one, two)):
+                            self.snd(self.clients[self.states[cl.name].name1].c, t)
+                            self.snd(self.clients[self.states[cl.name].name2].c, t)
 
 
             else:

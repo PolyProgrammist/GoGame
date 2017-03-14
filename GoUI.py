@@ -24,8 +24,11 @@ class GoUI:
     board_places = gost.board_size + 1
 
     def __init__(self, goclcon):
+        threading.Thread(target=self.inlol, args=[goclcon]).start()
+
+    def inlol(self, goclcon):
         self.init_screen()
-        self.gost.now_color = 1 #black
+        self.gost.now_color = 1  # black
         self.goclcon = goclcon
         while True:
             for event in pygame.event.get():
@@ -35,14 +38,19 @@ class GoUI:
                     t = self.analyze_pos(event.pos)
                     self.redraw_background()
                     if (t[0] != -5 and self.gost.places[t[0]][t[1]] == self.gost.freez):
-                        self.draw_transparent_stone((self.gap_size + t[0] * self.cell_size, self.full_add + t[1] * self.cell_size))
+                        self.draw_transparent_stone(
+                            (self.gap_size + t[0] * self.cell_size, self.full_add + t[1] * self.cell_size))
                     pygame.display.update()
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     t = self.analyze_pos(event.pos)
-                    self.goclcon.go(t)
-                    # if (self.gost.try_pas(t)):
-                    #     self.redraw_background()
-                    #     pygame.display.update()
+                    if (self.gost.try_pas(t)):
+                        self.goclcon.go(t)
+                        self.redraw_background()
+                        pygame.display.update()
+    def letsgo(self, t):
+        self.gost.try_pas(t)
+        self.redraw_background()
+        pygame.display.update()
 
     def printtable(self):
         for i in self.places:
