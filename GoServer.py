@@ -71,7 +71,7 @@ class GoServer:
                         ind = t.find(' ', 3)
                         one = int(t[3:ind])
                         two = int(t[ind + 1:])
-                        if self.states[cl.name].try_pas((one, two)):
+                        if self.states[cl.name].try_pas((one, two), cl.name == self.states[cl.name].name1):
                             self.snd(self.clients[self.states[cl.name].name1].c, t)
                             self.snd(self.clients[self.states[cl.name].name2].c, t)
 

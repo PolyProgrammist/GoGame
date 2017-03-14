@@ -43,12 +43,9 @@ class GoUI:
                     pygame.display.update()
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     t = self.analyze_pos(event.pos)
-                    if (self.gost.try_pas(t)):
-                        self.goclcon.go(t)
-                        self.redraw_background()
-                        pygame.display.update()
+                    self.goclcon.go(t)
     def letsgo(self, t):
-        self.gost.try_pas(t)
+        self.gost.try_pas(t, self.gost.now_color)
         self.redraw_background()
         pygame.display.update()
 
