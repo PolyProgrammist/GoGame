@@ -5,7 +5,8 @@ import sys
 import GoUI
 
 class GoClientConnect:
-    def __init__(self):
+    def __init__(self, maingo):
+        self.maingo = maingo
         self.s = socket.socket()         # Create a socket object
         host = socket.gethostname() # Get local machine name
         port = 12345                # Reserve a port for your service.
@@ -43,12 +44,12 @@ class GoClientConnect:
             if (t == 'end'):
                 self.finish()
             if (t == 'connect'):
-                self.goui = GoUI.GoUI(self)
+                self.maingo.createUI()
             if (t.find('go') == 0):
                 ind = t.find(' ', 3)
                 one = int(t[3:ind])
                 two = int(t[ind + 1:])
-                self.goui.letsgo((one, two))
+                self.maingo.goui.letsgo((one, two))
 
     def finish(self):
         self.working = False

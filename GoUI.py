@@ -23,13 +23,13 @@ class GoUI:
     stone_radius = (int) ((cell_size * stone_diameter_fix) / 2)
     board_places = gost.board_size + 1
 
-    def __init__(self, goclcon):
-        threading.Thread(target=self.inlol, args=[goclcon]).start()
+    def __init__(self, maingo):
+        self.maingo = maingo
+        threading.Thread(target=self.inlol, args=[]).start()
 
-    def inlol(self, goclcon):
+    def inlol(self):
         self.init_screen()
         self.gost.now_color = 1  # black
-        self.goclcon = goclcon
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -43,7 +43,7 @@ class GoUI:
                     pygame.display.update()
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     t = self.analyze_pos(event.pos)
-                    self.goclcon.go(t)
+                    self.maingo.connector.go(t)
     def letsgo(self, t):
         self.gost.try_pas(t, self.gost.now_color)
         self.redraw_background()
