@@ -75,6 +75,10 @@ class GoServer:
                             self.snd(self.clients[self.states[cl.name].name1].c, t)
                             self.snd(self.clients[self.states[cl.name].name2].c, t)
 
+                    if t.find('list') == 0:
+                        s = ' '.join([key for key in self.clients.keys() if key not in self.states and key != cl.name
+                                      and cl.authorized])
+                        self.snd(self.clients[cl.name].c, 'list ' + s)
 
             else:
                 cl.running = False

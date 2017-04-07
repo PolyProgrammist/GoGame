@@ -45,9 +45,10 @@ class GOQT(QWidget):
         self.setFixedSize(*widget.sizes)
 
 class AuthorizeWidget(QWidget):
-    def __init__(self, mainWidget):
+    def __init__(self, mainWidget, maingo):
         super().__init__()
         self.mainWidget = mainWidget
+        self.maingo = maingo
         self.sizes = (200, 200)
 
     def recreate(self):
@@ -70,30 +71,36 @@ class AuthorizeWidget(QWidget):
         if tfName.text() == '':
             QMessageBox.critical(self, 'Go', "You have not entered a name")
             return
-
+        self.maingo.connector.snd('auth ' + tfName.text())
+        self.maingo.connector.snd('list')
         self.mainWidget.changeWidget(self.mainWidget.connectWidget)
 
 class ConnectWidget(QWidget):
-    def __init__(self, mainWidget):
+    def __init__(self, mainWidget, maingo):
         super().__init__()
         self.mainWidget = mainWidget
+        self.maingo = maingo
         self.sizes = (350, 350)
 
     def recreate(self):
         self.setLayout(self.findMateLayout())
+        print('recreated')
 
     def findMateLayout(self):
         layout = QVBoxLayout()
-        layout.addWidget(self.getScrollWidget(self.getNamesLayout(self.getNames())))
+        refresh = QPushButton('Refresh')
+        self.vl = QVBoxLayout()
+        print('thethethethe')
+        refresh.clicked.connect(lambda : self.getNamesLayout(self.getNames()))
+
+        layout.addWidget(refresh)
+        layout.addWidget(self.getScrollWidget())
         return layout
 
     def getNames(self):
-        names = ['Bazilio', 'Alice']
-        names += ['a' * 16] * 100
-        return names
+        return self.maingo.connector.availibleUsers
 
     def getNamesLayout(self, names):
-        vl = QVBoxLayout()
         for m in names:
             lbname = QLabel(m)
             self.setFontSize(lbname, 14)
@@ -106,16 +113,16 @@ class ConnectWidget(QWidget):
             qh.addWidget(lbname)
             qh.addWidget(bconnect)
 
-            vl.addLayout(qh)
-
-        return vl
+            self.vl.addLayout(qh)
+        print('ththththththhththththh')
 
     def setFontSize(self, label, fontSize):
         font = QFont()
         font.setPointSize(fontSize)
         label.setFont(font)
 
-    def getScrollWidget(self, contentLayout):
+    def getScrollWidget(self):
+        contentLayout = self.vl
         tmpWidget = QWidget()
         tmpWidget.setLayout(contentLayout)
         scroll = QScrollArea()

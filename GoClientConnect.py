@@ -22,6 +22,7 @@ class MyThread(QThread):
 class GoClientConnect:
     def __init__(self, maingo):
         self.maingo = maingo
+        self.availibleUsers = []
         self.s = socket.socket()         # Create a socket object
         host = socket.gethostname() # Get local machine name
         port = 12345                # Reserve a port for your service.
@@ -74,6 +75,8 @@ class GoClientConnect:
                 two = int(t[ind + 1:])
                 self.argument = (one, two)
                 self.thread1.trigger.emit(0)
+            if (t.find('list') == 0):
+                self.availibleUsers = t[4:].split(' ')
 
     def finish(self):
         self.working = False
