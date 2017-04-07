@@ -1,4 +1,6 @@
 # GoGame
 
 To start the game:
-  Just play
+  Start the server
+  Start clients
+  Play
