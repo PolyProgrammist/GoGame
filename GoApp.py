@@ -12,11 +12,14 @@ import FalseConnect
 
 class GoMain:
     def __init__(self):
-
         self.goui = GOQT(self)
-        self.connector = GoClientConnect.GoClientConnect(self)
+        self.connector = FalseConnect.GoClientConnect(self)
+
 
 if __name__ == "__main__":
-    app = QApplication([])
-    GoMain()
-    sys.exit(app.exec_())
+    try:
+        app = QApplication([])
+        GoMain()
+        sys.exit(app.exec_())
+    except:
+        print(sys.exc_info())

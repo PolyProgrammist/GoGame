@@ -24,6 +24,7 @@ class GOQT(QWidget):
         self.initUI()
 
     def initUI(self):
+        self.move(0, 0)
         self.setWindowTitle('Go')
         self.authorizeWidget = AuthorizeWidget(self, self.maingo)
         self.connectWidget = ConnectWidget(self, self.maingo)
@@ -44,16 +45,15 @@ class GOQT(QWidget):
     def changeWidget(self, widget):
         widget.recreate()
         self.stack.setCurrentWidget(widget)
-        self.setFixedSize(*widget.sizes)
 
 class AuthorizeWidget(QWidget):
     def __init__(self, mainWidget, maingo):
         super().__init__()
         self.mainWidget = mainWidget
         self.maingo = maingo
-        self.sizes = (200, 200)
 
     def recreate(self):
+        self.mainWidget.setFixedSize(200, 200)
         self.setLayout(self.authorizeLayout())
 
     def authorizeLayout(self):
@@ -88,9 +88,9 @@ class ConnectWidget(QWidget):
         super().__init__()
         self.mainWidget = mainWidget
         self.maingo = maingo
-        self.sizes = (350, 350)
 
     def recreate(self):
+        self.mainWidget.setFixedSize(350, 350)
         self.setLayout(self.findMateLayout())
 
     def findMateLayout(self):
@@ -100,7 +100,8 @@ class ConnectWidget(QWidget):
         from PyQt5.QtCore import Qt
         self.vl.setAlignment(Qt.AlignTop)
         refresh.clicked.connect(lambda : self.maingo.connector.snd('list'))
-        layout.addWidget(self.getLabelWithFont(self.maingo.name, 14))
+        s = ('You are: ' + self.maingo.name)
+        layout.addWidget(self.getLabelWithFont(s, 14))
         layout.addWidget(refresh)
         layout.addWidget(self.getScrollWidget())
         return layout
@@ -165,6 +166,7 @@ class ConnectWidget(QWidget):
         #self.mainWidget.changeWidget(self.mainWidget.gameWidget)
     def startGame(self):
         self.mainWidget.changeWidget(self.mainWidget.gameWidget)
+
 
 if __name__ == '__main__':
     app = QApplication([])

@@ -10,10 +10,10 @@ from PyQt5.QtCore import pyqtSignal
 import GoUI
 
 class MyThread(QThread):
-    trigger = pyqtSignal(int)
-    trigger2 = pyqtSignal(int)
-    trigger3 = pyqtSignal(int)
-    trigger4 = pyqtSignal(int)
+    triggerGoMakeStep = pyqtSignal(int)
+    triggerRefreshUserList = pyqtSignal(int)
+    triggerConnectedSomeone = pyqtSignal(int)
+    triggerAuthAnswer = pyqtSignal(int)
 
     def __init__(self, parent, meth):
         super(MyThread, self).__init__(parent)
@@ -32,10 +32,10 @@ class GoClientConnect:
         self.working = True
         self.argument = (-1, -1)
         self.thread1 = MyThread(self.maingo.goui, self.receiving)    # create a thread
-        self.thread1.trigger.connect(self.lllgo)  # connect to it's signal
-        self.thread1.trigger2.connect(self.maingo.goui.connectWidget.refresh)
-        self.thread1.trigger3.connect(self.maingo.goui.connectWidget.startGame)
-        self.thread1.trigger4.connect(self.authans)
+        self.thread1.triggerGoMakeStep.connect(self.lllgo)  # connect to it's signal
+        self.thread1.triggerRefreshUserList.connect(self.maingo.goui.connectWidget.refresh)
+        self.thread1.triggerConnectedSomeone.connect(self.maingo.goui.connectWidget.startGame)
+        self.thread1.triggerAuthAnswer.connect(self.authans)
         self.thread1.start()
         self.thread2 = MyThread(self.maingo.goui, self.inputDoing)  # create a thread
         self.thread2.start()
@@ -75,20 +75,20 @@ class GoClientConnect:
             if (t == 'end'):
                 self.finish()
             if (t == 'connect'):
-                self.thread1.trigger3.emit(0)
+                self.thread1.triggerConnectedSomeone.emit(0)
             if (t.find('go') == 0):
                 ind = t.find(' ', 3)
                 one = int(t[3:ind])
                 two = int(t[ind + 1:])
                 self.argument = (one, two)
                 print('argum')
-                self.thread1.trigger.emit(0)
+                self.thread1.triggerGoMakeStep.emit(0)
             if (t.find('list') == 0):
                 self.availibleUsers = [i for i in t[5:].split(' ') if i != '']
-                self.thread1.trigger2.emit(0)
+                self.thread1.triggerRefreshUserList.emit(0)
             if (t.find('auth') == 0):
                 self.authAnswer = t
-                self.thread1.trigger4.emit(0)
+                self.thread1.triggerAuthAnswer.emit(0)
 
     def finish(self):
         self.working = False

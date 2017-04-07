@@ -1,5 +1,7 @@
 import threading
 import sys
+
+from PyQt5.QtCore import QSize
 from PyQt5.QtCore import Qt
 
 from PyQt5.QtCore import QPoint
@@ -25,12 +27,12 @@ class GoUIQT(QWidget):
         self.setLayout(layout)
         self.buttonHello = QPushButton('hello')
         layout.addWidget(self.buttonHello)
-        board_display_size = 800
+        layout.setAlignment(Qt.AlignCenter)
+        board_size = 800
         step = 50
-        self.justBoard = JustBoard(self.maingo, board_display_size)
+        self.maingo.goui.setFixedSize(board_size + step, board_size + step * 4)
+        self.justBoard = JustBoard(self.maingo, board_size)
         layout.addWidget(self.justBoard)
-        self.sizes = (800, 850)
-        self.justBoard.recreate()
 
 class JustBoard(QWidget):
     gost = GoState.GoState()
@@ -47,9 +49,9 @@ class JustBoard(QWidget):
         super().__init__()
         self.maingo = maingo
         self.board_display_size = board_display_size
+        tw = board_display_size
         self.calc_constants()
-        self.setFixedSize(self.board_display_size, self.full_display_height)
-        #self.inlol()
+        self.recreate()
 
     def calc_constants(self):
         self.score_display_height = 0
@@ -114,6 +116,7 @@ class JustBoard(QWidget):
             return a, b
 
     def recreate(self):
+        self.setFixedSize(self.board_display_size, self.full_display_height)
         self.setMouseTracking(True)
         self.setFixedSize(self.board_display_size, self.full_display_height)
         self.setWindowTitle('Go')
