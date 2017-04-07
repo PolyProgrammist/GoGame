@@ -46,14 +46,20 @@ class GoServer:
 
     def handleConnection(self, cl):
         self.snd(cl.c, 'Thank you for connecting')
-        while self.working:
-            t = self.rcv(cl.c)
+        while self.working and cl.running:
+            t = self.rcv(cl)
             if t != "":
                 print(cl.name + ' ::  ' + t)
                 if t.find("auth") == 0:
+                    tst = t[5:]
+                    if tst in self.clients:
+                        self.snd(cl.c, 'autherror')
+                        continue
                     del self.clients[cl.name]
                     cl.set_name(t[5:])
                     self.clients[cl.name] = cl
+                    self.snd(cl.c, 'authok')
+                    self.sendall()
                 if cl.authorized:
                     if t.find("connect") == 0:
                         op = t[8:]
@@ -76,13 +82,20 @@ class GoServer:
                             self.snd(self.clients[self.states[cl.name].name2].c, t)
 
                     if t.find('list') == 0:
-                        s = ' '.join([key for key in self.clients.keys() if key not in self.states and key != cl.name
-                                      and self.clients[key].authorized])
-                        self.snd(self.clients[cl.name].c, 'list ' + s)
+                        self.snd(self.clients[cl.name].c, 'list ' + self.getUserList(cl))
 
             else:
                 cl.running = False
-
+                del self.clients[cl.name]
+                self.sendall()
+    def getUserList(self, cl):
+        return ' '.join([key for key in self.clients.keys() if key not in self.states and key != cl.name
+              and self.clients[key].authorized])
+    def sendall(self):
+        for client in self.clients:
+            p = self.clients[client]
+            if p.authorized:
+                self.snd(p.c, 'list ' + self.getUserList(p))
 
     def finish(self):
         self.working = False
@@ -96,10 +109,10 @@ class GoServer:
     def snd(self, s, st):
         print('sended ' + st)
         s.send(bytearray(st, 'utf-8'))
-    def rcv(self, s):
+    def rcv(self, cl):
         while self.working:
             try:
-                t = str(s.recv(1024), 'utf-8')
+                t = str(cl.c.recv(1024), 'utf-8')
                 if len(t):
                     return t
             except:

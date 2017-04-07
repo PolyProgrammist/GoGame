@@ -61,6 +61,7 @@ class AuthorizeWidget(QWidget):
         btnGoGuest = QPushButton("Go guest")
         tfName = QLineEdit()
         tfName.setPlaceholderText('Enter the name')
+        tfName.setMaxLength(16)
         tfName.returnPressed.connect(btnok.click)
         vl = QVBoxLayout()
         vl.addWidget(tfName)
@@ -74,8 +75,13 @@ class AuthorizeWidget(QWidget):
             QMessageBox.critical(self, 'Go', "You have not entered a name")
             return
         self.maingo.connector.snd('auth ' + tfName.text())
-        self.mainWidget.changeWidget(self.mainWidget.connectWidget)
-        self.maingo.connector.snd('list')
+        self.maingo.name = tfName.text()
+
+    def answerRequest(self, answer):
+        if answer == 'authok':
+            self.mainWidget.changeWidget(self.mainWidget.connectWidget)
+        else:
+            QMessageBox.critical(self, 'Go', "This user already exists")
 
 class ConnectWidget(QWidget):
     def __init__(self, mainWidget, maingo):
@@ -91,8 +97,10 @@ class ConnectWidget(QWidget):
         layout = QVBoxLayout()
         refresh = QPushButton('Refresh')
         self.vl = QVBoxLayout()
+        from PyQt5.QtCore import Qt
+        self.vl.setAlignment(Qt.AlignTop)
         refresh.clicked.connect(lambda : self.maingo.connector.snd('list'))
-
+        layout.addWidget(self.getLabelWithFont(self.maingo.name, 14))
         layout.addWidget(refresh)
         layout.addWidget(self.getScrollWidget())
         return layout
@@ -105,6 +113,8 @@ class ConnectWidget(QWidget):
 
     def getNamesLayout(self, names):
         self.clearLayout(self.vl)
+        if len(names) == 0:
+            self.vl.addWidget(self.getLabelWithFont('No users online', 14))
         for m in names:
             lbname = QLabel(m)
             self.setFontSize(lbname, 14)
@@ -129,6 +139,11 @@ class ConnectWidget(QWidget):
             else:
                 self.clearLayout(item.layout())
             layout.removeItem(item)
+
+    def getLabelWithFont(self, s, fontSize):
+        label = QLabel(s)
+        self.setFontSize(label, fontSize)
+        return label
 
     def setFontSize(self, label, fontSize):
         font = QFont()

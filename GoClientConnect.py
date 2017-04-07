@@ -13,6 +13,7 @@ class MyThread(QThread):
     trigger = pyqtSignal(int)
     trigger2 = pyqtSignal(int)
     trigger3 = pyqtSignal(int)
+    trigger4 = pyqtSignal(int)
 
     def __init__(self, parent, meth):
         super(MyThread, self).__init__(parent)
@@ -34,12 +35,15 @@ class GoClientConnect:
         self.thread1.trigger.connect(self.lllgo)  # connect to it's signal
         self.thread1.trigger2.connect(self.maingo.goui.connectWidget.refresh)
         self.thread1.trigger3.connect(self.maingo.goui.connectWidget.startGame)
+        self.thread1.trigger4.connect(self.authans)
         self.thread1.start()
         self.thread2 = MyThread(self.maingo.goui, self.inputDoing)  # create a thread
         self.thread2.start()
     def lllgo(self):
         print('lllgo')
         self.maingo.goui.gameWidget.justBoard.letsgo(self.argument)
+    def authans(self):
+        self.maingo.goui.authorizeWidget.answerRequest(self.authAnswer)
 
     def snd(self, st):
         if not self.working:
@@ -82,6 +86,9 @@ class GoClientConnect:
             if (t.find('list') == 0):
                 self.availibleUsers = [i for i in t[5:].split(' ') if i != '']
                 self.thread1.trigger2.emit(0)
+            if (t.find('auth') == 0):
+                self.authAnswer = t
+                self.thread1.trigger4.emit(0)
 
     def finish(self):
         self.working = False
