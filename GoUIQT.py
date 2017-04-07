@@ -19,21 +19,18 @@ import GoState
 class GoUIQT(QWidget):
     def __init__(self, maingo):
         super().__init__()
+        self.maingo = maingo
+    def recreate(self):
         layout = QVBoxLayout()
         self.setLayout(layout)
         self.buttonHello = QPushButton('hello')
         layout.addWidget(self.buttonHello)
         board_display_size = 800
         step = 50
-        self.justBoard = JustBoard(maingo, board_display_size)
+        self.justBoard = JustBoard(self.maingo, board_display_size)
         layout.addWidget(self.justBoard)
-        self.setFixedSize(board_display_size, board_display_size + step)
-        self.show()
-    def set_text(self):
-        self.buttonHello.setText('not now')
-    def kek(self):
-        self.justBoard.letsgo((3, 3))
-
+        self.sizes = (800, 850)
+        self.justBoard.recreate()
 
 class JustBoard(QWidget):
     gost = GoState.GoState()
@@ -51,7 +48,8 @@ class JustBoard(QWidget):
         self.maingo = maingo
         self.board_display_size = board_display_size
         self.calc_constants()
-        self.inlol()
+        self.setFixedSize(self.board_display_size, self.full_display_height)
+        #self.inlol()
 
     def calc_constants(self):
         self.score_display_height = 0
@@ -80,10 +78,11 @@ class JustBoard(QWidget):
 
     def mousePressEvent(self, QMouseEvent):
         t = self.analyze_pos(self.point_to_tuple(QMouseEvent.pos()))
-        self.maingo.connector.go(t)
+        #self.maingo.connector.go(t)
+        self.letsgo(t)
 
     def inlol(self):
-        self.init_screen()
+        self.recreate()
         self.gost.now_color = 1  # black
 
     def letsgo(self, t):
@@ -112,7 +111,8 @@ class JustBoard(QWidget):
         else:
             return a, b
 
-    def init_screen(self):
+    def recreate(self):
+        print('hey')
         self.setMouseTracking(True)
         self.setFixedSize(self.board_display_size, self.full_display_height)
         self.setWindowTitle('Go')

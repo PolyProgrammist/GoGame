@@ -7,11 +7,12 @@ from PyQt5.QtWidgets import QApplication
 
 import GoClientConnect
 import GoUIQT
+from QTwindow import GOQT
 
 class GoMain:
     def __init__(self):
 
-        self.goui = GoUIQT.GoUIQT(self)
+        self.goui = GOQT(self)
         self.connector = GoClientConnect.GoClientConnect(self)
 
 if __name__ == "__main__":

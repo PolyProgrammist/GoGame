@@ -37,6 +37,8 @@ class GoClientConnect:
         self.maingo.goui.justBoard.letsgo(self.argument)
 
     def snd(self, st):
+        if not self.working:
+            return
         print('sended ' + st)
         self.s.send(bytearray(st, 'utf-8'))
     def rcv(self):
