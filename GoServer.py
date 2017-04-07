@@ -49,7 +49,7 @@ class GoServer:
         while self.working:
             t = self.rcv(cl.c)
             if t != "":
-                print(cl.name + ' ::  ' + t + '  ' + str(len(t)))
+                print(cl.name + ' ::  ' + t)
                 if t.find("auth") == 0:
                     del self.clients[cl.name]
                     cl.set_name(t[5:])
@@ -77,7 +77,7 @@ class GoServer:
 
                     if t.find('list') == 0:
                         s = ' '.join([key for key in self.clients.keys() if key not in self.states and key != cl.name
-                                      and cl.authorized])
+                                      and self.clients[key].authorized])
                         self.snd(self.clients[cl.name].c, 'list ' + s)
 
             else:

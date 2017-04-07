@@ -12,6 +12,7 @@ import GoUI
 
 class MyThread(QThread):
     trigger = pyqtSignal(int)
+    #trigger2 = pyqtSignal(int)
 
     def __init__(self, parent, meth):
         super(MyThread, self).__init__(parent)
@@ -31,6 +32,7 @@ class GoClientConnect:
         self.argument = (-1, -1)
         self.thread1 = MyThread(self.maingo.goui, self.receiving)    # create a thread
         self.thread1.trigger.connect(self.lllgo)  # connect to it's signal
+        #self.thread1.trigger2.connect()
         self.thread1.start()
         self.thread2 = MyThread(self.maingo.goui, self.inputDoing)  # create a thread
         self.thread2.start()
@@ -76,7 +78,8 @@ class GoClientConnect:
                 self.argument = (one, two)
                 self.thread1.trigger.emit(0)
             if (t.find('list') == 0):
-                self.availibleUsers = t[4:].split(' ')
+                self.availibleUsers = [i for i in t[5:].split(' ') if i != '']
+                #self.thread1.trigger2.emit(0)
 
     def finish(self):
         self.working = False

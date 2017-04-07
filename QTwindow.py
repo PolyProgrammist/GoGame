@@ -90,7 +90,6 @@ class ConnectWidget(QWidget):
         layout = QVBoxLayout()
         refresh = QPushButton('Refresh')
         self.vl = QVBoxLayout()
-        print('thethethethe')
         refresh.clicked.connect(lambda : self.getNamesLayout(self.getNames()))
 
         layout.addWidget(refresh)
@@ -101,6 +100,8 @@ class ConnectWidget(QWidget):
         return self.maingo.connector.availibleUsers
 
     def getNamesLayout(self, names):
+        for i in self.vl.children():
+            self.vl.removeItem(i)
         for m in names:
             lbname = QLabel(m)
             self.setFontSize(lbname, 14)
@@ -114,7 +115,6 @@ class ConnectWidget(QWidget):
             qh.addWidget(bconnect)
 
             self.vl.addLayout(qh)
-        print('ththththththhththththh')
 
     def setFontSize(self, label, fontSize):
         font = QFont()
