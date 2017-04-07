@@ -1,9 +1,8 @@
-import pygame
-import threading
 import socket
-import sys
-import GoState
-import GoClientConnect
+import threading
+
+from Common import GoState
+
 
 class Client:
     name = ''
@@ -66,15 +65,13 @@ class GoServer:
                         op = t[8:]
                         name1 = cl.name
                         name2 = op
-                        self.snd(self.clients[name1].c, 'connect')
-                        self.snd(self.clients[name2].c, 'connect')
+                        self.snd(self.clients[name1].c, 'connect ' + name2 + ' 1')
+                        self.snd(self.clients[name2].c, 'connect ' + name1 + ' 0')
 
                         state = GoState.GoState(name1, name2)
                         self.states[name1] = state
                         self.states[name2] = state
-                        self.clients[name2].playing = True
-                        self.clients[name1].playing = True
-                    if t.find("go") == 0 and cl.playing:
+                    if t.find("go") == 0 and cl.name in self.states:
                         ind = t.find(' ', 3)
                         one = int(t[3:ind])
                         two = int(t[ind + 1:])

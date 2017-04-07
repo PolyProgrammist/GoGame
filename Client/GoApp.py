@@ -1,14 +1,10 @@
-import pygame
-import threading
-import socket
 import sys
 
 from PyQt5.QtWidgets import QApplication
 
-import GoClientConnect
-import GoBoardUI
-from QTwindow import GOQT
-import FalseConnect
+from Client.Connection import GoClientConnect
+from Client.GoUI.GoWindows import GOQT
+
 
 class GoMain:
     def __init__(self):

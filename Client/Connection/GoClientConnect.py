@@ -1,10 +1,6 @@
-import threading
 import socket
-import sys
 
-from PyQt5.QtCore import QRunnable
 from PyQt5.QtCore import QThread
-from PyQt5.QtCore import QThreadPool
 from PyQt5.QtCore import pyqtSignal
 
 class MyThread(QThread):

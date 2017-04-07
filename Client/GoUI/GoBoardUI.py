@@ -1,22 +1,17 @@
-import threading
 import sys
 
-from PyQt5.QtCore import QSize
-from PyQt5.QtCore import Qt
-
-from PyQt5.QtCore import QPoint
 from PyQt5.QtCore import QRect
-from PyQt5.QtGui import QBrush
+from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QColor
 from PyQt5.QtGui import QPainter
 from PyQt5.QtGui import QPalette
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtWidgets import QPushButton
-from PyQt5.QtWidgets import QStyle
 from PyQt5.QtWidgets import QVBoxLayout
 from PyQt5.QtWidgets import QWidget
 
-import GoState
+from Common import GoState
+
 
 class GoBoardUI(QWidget):
     def __init__(self, maingo):
