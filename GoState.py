@@ -7,6 +7,7 @@ class GoState:
         self.places = [[self.freez] * (self.board_size + 1) for _ in range(self.board_size + 1)]
         self.name1 = name1
         self.name2 = name2
+
     def try_pas(self, t, color):
         if (t[0] != self.freez and self.places[t[0]][t[1]] == self.freez
             and self.now_color == color and not self.is_suicide(t)):

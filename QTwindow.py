@@ -14,7 +14,7 @@ from PyQt5.QtWidgets import QVBoxLayout
 from PyQt5.QtWidgets import QWidget
 from PyQt5.QtWidgets import QWidgetItem
 
-from GoUIQT import GoUIQT
+from GoBoardUI import GoBoardUI
 
 
 class GOQT(QWidget):
@@ -28,7 +28,7 @@ class GOQT(QWidget):
         self.setWindowTitle('Go')
         self.authorizeWidget = AuthorizeWidget(self, self.maingo)
         self.connectWidget = ConnectWidget(self, self.maingo)
-        self.gameWidget = GoUIQT(self.maingo)
+        self.gameWidget = GoBoardUI(self.maingo)
 
         self.stack = QStackedWidget()
         self.stack.addWidget(self.authorizeWidget)

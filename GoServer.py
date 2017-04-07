@@ -46,7 +46,8 @@ class GoServer:
 
     def handleConnection(self, cl):
         self.snd(cl.c, 'Thank you for connecting')
-        while self.working and cl.running:
+        runs = True
+        while self.working and runs:
             t = self.rcv(cl)
             if t != "":
                 print(cl.name + ' ::  ' + t)
@@ -85,16 +86,33 @@ class GoServer:
                         self.snd(self.clients[cl.name].c, 'list ' + self.getUserList(cl))
 
             else:
+                runs = False
                 cl.running = False
                 del self.clients[cl.name]
+                if cl.name in self.states:
+                    name1 = self.states[cl.name].name1
+                    name2 = self.states[cl.name].name2
+                    del self.states[name1]
+                    del self.states[name2]
                 self.sendall()
+                print('good bye' + cl.name)
+
     def getUserList(self, cl):
-        return ' '.join([key for key in self.clients.keys() if key not in self.states and key != cl.name
+        print('getUserList')
+        print([name for name in self.clients])
+        t =  ' '.join([key for key in self.clients if key not in self.states and key != cl.name
               and self.clients[key].authorized])
+        print(t)
+        print([name for name in self.clients])
+        return t
+
     def sendall(self):
+        print('startsendall')
         for client in self.clients:
             p = self.clients[client]
+            print('tryp' + client)
             if p.authorized:
+                print('authorized')
                 self.snd(p.c, 'list ' + self.getUserList(p))
 
     def finish(self):

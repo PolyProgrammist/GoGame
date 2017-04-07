@@ -18,7 +18,7 @@ from PyQt5.QtWidgets import QWidget
 
 import GoState
 
-class GoUIQT(QWidget):
+class GoBoardUI(QWidget):
     def __init__(self, maingo):
         super().__init__()
         self.maingo = maingo
@@ -31,10 +31,10 @@ class GoUIQT(QWidget):
         board_size = 800
         step = 50
         self.maingo.goui.setFixedSize(board_size + step, board_size + step * 4)
-        self.justBoard = JustBoard(self.maingo, board_size)
+        self.justBoard = JustBoardUI(self.maingo, board_size)
         layout.addWidget(self.justBoard)
 
-class JustBoard(QWidget):
+class JustBoardUI(QWidget):
     gost = GoState.GoState()
     board_color = (0xC0, 0x40, 0x0)
     stone_color = ((50, 50, 50),(200, 200, 200))
@@ -88,8 +88,6 @@ class JustBoard(QWidget):
         self.gost.now_color = 1  # black
 
     def letsgo(self, t):
-        print('now')
-        print(t)
         self.gost.try_pas(t, self.gost.now_color)
         self.update()
 
@@ -168,5 +166,5 @@ class JustBoard(QWidget):
 
 if __name__ == '__main__':
     app = QApplication([])
-    goqt = GoUIQT(5)
+    goqt = GoBoardUI(5)
     sys.exit(app.exec_())

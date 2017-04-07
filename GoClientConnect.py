@@ -7,8 +7,6 @@ from PyQt5.QtCore import QThread
 from PyQt5.QtCore import QThreadPool
 from PyQt5.QtCore import pyqtSignal
 
-import GoUI
-
 class MyThread(QThread):
     triggerGoMakeStep = pyqtSignal(int)
     triggerRefreshUserList = pyqtSignal(int)
@@ -48,7 +46,7 @@ class GoClientConnect:
     def snd(self, st):
         if not self.working:
             return
-        print('sended ' + st)
+        #print('sended ' + st)
         self.s.send(bytearray(st, 'utf-8'))
     def rcv(self):
         while self.working:
