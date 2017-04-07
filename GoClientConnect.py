@@ -2,7 +2,22 @@ import pygame
 import threading
 import socket
 import sys
+
+from PyQt5.QtCore import QRunnable
+from PyQt5.QtCore import QThread
+from PyQt5.QtCore import QThreadPool
+from PyQt5.QtCore import pyqtSignal
+
 import GoUI
+
+class MyThread(QThread):
+    trigger = pyqtSignal(int)
+
+    def __init__(self, parent, meth):
+        super(MyThread, self).__init__(parent)
+        self.meth = meth
+    def run(self):
+        self.meth()
 
 class GoClientConnect:
     def __init__(self, maingo):
@@ -12,8 +27,14 @@ class GoClientConnect:
         port = 12345                # Reserve a port for your service.
         self.s.connect((host, port))
         self.working = True
-        threading.Thread(target=self.inputDoing).start()
-        threading.Thread(target=self.receiving).start()
+        self.argument = (-1, -1)
+        self.thread1 = MyThread(self.maingo.goui, self.receiving)    # create a thread
+        self.thread1.trigger.connect(self.lllgo)  # connect to it's signal
+        self.thread1.start()
+        self.thread2 = MyThread(self.maingo.goui, self.inputDoing)  # create a thread
+        self.thread2.start()
+    def lllgo(self):
+        self.maingo.goui.justBoard.letsgo(self.argument)
 
     def snd(self, st):
         print('sended ' + st)
@@ -40,16 +61,17 @@ class GoClientConnect:
     def receiving(self):
         while self.working:
             t = self.rcv()
-            print(t)
             if (t == 'end'):
                 self.finish()
             if (t == 'connect'):
-                self.maingo.createUI()
+                #self.maingo.createUI()
+                a = 0
             if (t.find('go') == 0):
                 ind = t.find(' ', 3)
                 one = int(t[3:ind])
                 two = int(t[ind + 1:])
-                self.maingo.goui.letsgo((one, two))
+                self.argument = (one, two)
+                self.thread1.trigger.emit(0)
 
     def finish(self):
         self.working = False

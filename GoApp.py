@@ -3,14 +3,18 @@ import threading
 import socket
 import sys
 
+from PyQt5.QtWidgets import QApplication
+
 import GoClientConnect
-import GoUI
+import GoUIQT
 
 class GoMain:
     def __init__(self):
+
+        self.goui = GoUIQT.GoUIQT(self)
         self.connector = GoClientConnect.GoClientConnect(self)
-    def createUI(self):
-        self.goui = GoUI.GoUI(self)
 
 if __name__ == "__main__":
+    app = QApplication([])
     GoMain()
+    sys.exit(app.exec_())
