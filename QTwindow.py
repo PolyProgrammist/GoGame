@@ -8,9 +8,11 @@ from PyQt5.QtWidgets import  QApplication
 from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtWidgets import QPushButton
 from PyQt5.QtWidgets import QScrollArea
+from PyQt5.QtWidgets import QSpacerItem
 from PyQt5.QtWidgets import QStackedWidget
 from PyQt5.QtWidgets import QVBoxLayout
 from PyQt5.QtWidgets import QWidget
+from PyQt5.QtWidgets import QWidgetItem
 
 from GoUIQT import GoUIQT
 
@@ -72,8 +74,8 @@ class AuthorizeWidget(QWidget):
             QMessageBox.critical(self, 'Go', "You have not entered a name")
             return
         self.maingo.connector.snd('auth ' + tfName.text())
-        self.maingo.connector.snd('list')
         self.mainWidget.changeWidget(self.mainWidget.connectWidget)
+        self.maingo.connector.snd('list')
 
 class ConnectWidget(QWidget):
     def __init__(self, mainWidget, maingo):
@@ -84,13 +86,12 @@ class ConnectWidget(QWidget):
 
     def recreate(self):
         self.setLayout(self.findMateLayout())
-        print('recreated')
 
     def findMateLayout(self):
         layout = QVBoxLayout()
         refresh = QPushButton('Refresh')
         self.vl = QVBoxLayout()
-        refresh.clicked.connect(lambda : self.getNamesLayout(self.getNames()))
+        refresh.clicked.connect(lambda : self.maingo.connector.snd('list'))
 
         layout.addWidget(refresh)
         layout.addWidget(self.getScrollWidget())
@@ -99,9 +100,11 @@ class ConnectWidget(QWidget):
     def getNames(self):
         return self.maingo.connector.availibleUsers
 
+    def refresh(self):
+        self.getNamesLayout(self.getNames())
+
     def getNamesLayout(self, names):
-        for i in self.vl.children():
-            self.vl.removeItem(i)
+        self.clearLayout(self.vl)
         for m in names:
             lbname = QLabel(m)
             self.setFontSize(lbname, 14)
@@ -115,6 +118,17 @@ class ConnectWidget(QWidget):
             qh.addWidget(bconnect)
 
             self.vl.addLayout(qh)
+
+    def clearLayout(self, layout):
+        for i in reversed(range(layout.count())):
+            item = layout.itemAt(i)
+            if isinstance(item, QWidgetItem):
+                item.widget().close()
+            elif isinstance(item, QSpacerItem):
+                a = 0
+            else:
+                self.clearLayout(item.layout())
+            layout.removeItem(item)
 
     def setFontSize(self, label, fontSize):
         font = QFont()
@@ -132,7 +146,9 @@ class ConnectWidget(QWidget):
         return scroll
 
     def connectUser(self, user):
-        print(user)
+        self.maingo.connector.snd('connect ' + user)
+        #self.mainWidget.changeWidget(self.mainWidget.gameWidget)
+    def startGame(self):
         self.mainWidget.changeWidget(self.mainWidget.gameWidget)
 
 if __name__ == '__main__':

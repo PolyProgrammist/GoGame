@@ -8,6 +8,7 @@ from PyQt5.QtWidgets import QApplication
 import GoClientConnect
 import GoUIQT
 from QTwindow import GOQT
+import FalseConnect
 
 class GoMain:
     def __init__(self):

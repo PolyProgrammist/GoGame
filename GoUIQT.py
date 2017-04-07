@@ -78,14 +78,16 @@ class JustBoard(QWidget):
 
     def mousePressEvent(self, QMouseEvent):
         t = self.analyze_pos(self.point_to_tuple(QMouseEvent.pos()))
-        #self.maingo.connector.go(t)
-        self.letsgo(t)
+        self.maingo.connector.go(t)
+        #self.letsgo(t)
 
     def inlol(self):
         self.recreate()
         self.gost.now_color = 1  # black
 
     def letsgo(self, t):
+        print('now')
+        print(t)
         self.gost.try_pas(t, self.gost.now_color)
         self.update()
 
@@ -112,7 +114,6 @@ class JustBoard(QWidget):
             return a, b
 
     def recreate(self):
-        print('hey')
         self.setMouseTracking(True)
         self.setFixedSize(self.board_display_size, self.full_display_height)
         self.setWindowTitle('Go')

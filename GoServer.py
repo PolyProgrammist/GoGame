@@ -101,7 +101,6 @@ class GoServer:
             try:
                 t = str(s.recv(1024), 'utf-8')
                 if len(t):
-                    print('received ' + t)
                     return t
             except:
                 return ""
