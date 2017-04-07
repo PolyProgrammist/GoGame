@@ -92,24 +92,16 @@ class GoServer:
                     del self.states[name1]
                     del self.states[name2]
                 self.sendall()
-                print('good bye' + cl.name)
 
     def getUserList(self, cl):
-        print('getUserList')
-        print([name for name in self.clients])
         t =  ' '.join([key for key in self.clients if key not in self.states and key != cl.name
               and self.clients[key].authorized])
-        print(t)
-        print([name for name in self.clients])
         return t
 
     def sendall(self):
-        print('startsendall')
         for client in self.clients:
             p = self.clients[client]
-            print('tryp' + client)
             if p.authorized:
-                print('authorized')
                 self.snd(p.c, 'list ' + self.getUserList(p))
 
     def finish(self):
