@@ -62,7 +62,7 @@ class GoState:
         for i in range(4):
             ti = t[0] + self.odi[i]
             tj = t[1] + self.odj[i]
-            if self.ok(ti, tj) and not self.was2[t[0]][t[1]]:
+            if self.ok(ti, tj) and not self.was2[ti][tj]:
                 self.dfs_del((ti, tj), clr)
 
     def ok(self, ti, tj):
