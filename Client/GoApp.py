@@ -2,14 +2,14 @@ import sys
 
 from PyQt5.QtWidgets import QApplication
 
-from Client.Connection import GoClientConnect
+from Client.Connection import Protogo
 from Client.GoUI.GoWindows import GOQT
 
 
 class GoMain:
     def __init__(self):
         self.goui = GOQT(self)
-        self.protor = GoClientConnect.Protogo(self)
+        self.protor = Protogo.Protogo(self)
 
 
 if __name__ == "__main__":
