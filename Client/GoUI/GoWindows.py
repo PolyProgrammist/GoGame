@@ -71,11 +71,12 @@ class AuthorizeWidget(QWidget):
         return vl
 
     def changeWidget(self, tfName):
+        text = tfName.text()
         if tfName.text() == '':
             QMessageBox.critical(self, 'Go', "You have not entered a name")
             return
-        self.maingo.connector.snd('auth ' + tfName.text())
-        self.maingo.name = tfName.text()
+        self.maingo.protor.auth(text)
+        self.maingo.name = text
 
     def answerRequest(self, answer):
         if answer == 'authok':
@@ -99,7 +100,7 @@ class ConnectWidget(QWidget):
         self.vl = QVBoxLayout()
         from PyQt5.QtCore import Qt
         self.vl.setAlignment(Qt.AlignTop)
-        refresh.clicked.connect(lambda : self.maingo.connector.snd('list'))
+        refresh.clicked.connect(lambda : self.maingo.protor.get_list())
         s = ('You are: ' + self.maingo.name)
         layout.addWidget(self.getLabelWithFont(s, 14))
         layout.addWidget(refresh)
@@ -107,7 +108,7 @@ class ConnectWidget(QWidget):
         return layout
 
     def getNames(self):
-        return self.maingo.connector.availibleUsers
+        return self.maingo.protor.connector.availibleUsers
 
     def refresh(self):
         self.getNamesLayout(self.getNames())
@@ -162,7 +163,7 @@ class ConnectWidget(QWidget):
         return scroll
 
     def connectUser(self, user):
-        self.maingo.connector.snd('connect ' + user)
+        self.maingo.protor.connect(user)
         #self.mainWidget.changeWidget(self.mainWidget.gameWidget)
     def startGame(self):
         self.mainWidget.changeWidget(self.mainWidget.gameWidget)

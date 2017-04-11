@@ -75,7 +75,7 @@ class JustBoardUI(QWidget):
 
     def mousePressEvent(self, QMouseEvent):
         t = self.analyze_pos(self.point_to_tuple(QMouseEvent.pos()))
-        self.maingo.connector.go(t)
+        self.maingo.protor.go(t)
         #self.letsgo(t)
 
     def inlol(self):

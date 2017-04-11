@@ -15,12 +15,14 @@ class MyThread(QThread):
         self.meth()
 
 class Protogo:
-    def __init__(self, connector, maingo):
-        self.connector = connector
+    def __init__(self, maingo):
+        self.connector = GoClientConnect(maingo, self)
         self.maingo = maingo
         self.q = Queue()
     def receive(self):
         self.t = self.q.get()
+
+        print('rec ' + self.t)
         if (self.t == 'end'):
             self.connector.finish()
         if self.t.find('connect') == 0:
@@ -36,9 +38,18 @@ class Protogo:
         if self.t.find('auth') == 0:
             self.maingo.goui.authorizeWidget.answerRequest(self.t)
 
+    def auth(self, name):
+        self.connector.snd('auth ' + name)
+    def get_list(self):
+        self.connector.snd('list')
+    def connect(self, user):
+        self.connector.snd('connect ' + user)
+    def go(self, t):
+        self.connector.snd('go ' + str(t[0]) + ' ' + str(t[1]))
+
 
 class GoClientConnect:
-    def __init__(self, maingo):
+    def __init__(self, maingo, protor):
         self.maingo = maingo
         self.availibleUsers = []
         self.s = socket.socket()         # Create a socket object
@@ -48,7 +59,7 @@ class GoClientConnect:
         self.working = True
         self.argument = (-1, -1)
         self.q = Queue()
-        self.protor = Protogo(self, self.maingo)
+        self.protor = protor
 
         #MyThread(self.maingo.goui, self.receiving).start()
         self.thread1 = MyThread(self.maingo.goui, self.receiving)
@@ -79,17 +90,13 @@ class GoClientConnect:
                     self.finish()
             if self.working:
                 self.snd(t)
-
     def receiving(self):
         while self.working:
             self.protor.q.put(self.rcv())
             self.thread1.trigger.emit(0)
-
     def finish(self):
         self.working = False
         self.s.close()
-    def go(self, t):
-        self.snd('go ' + str(t[0]) + ' ' + str(t[1]))
 
 if __name__ == "__main__":
     GoClientConnect()
