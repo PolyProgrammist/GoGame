@@ -19,7 +19,6 @@ class MyThread(QThread):
 class GoClientConnect:
     def __init__(self, maingo, protor):
         self.maingo = maingo
-        self.availibleUsers = []
         self.s = socket.socket()         # Create a socket object
         host = socket.gethostname() # Get local machine name
         port = 12345                # Reserve a port for your service.

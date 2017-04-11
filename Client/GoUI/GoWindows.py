@@ -108,7 +108,7 @@ class ConnectWidget(QWidget):
         return layout
 
     def getNames(self):
-        return self.maingo.protor.connector.availibleUsers
+        return self.maingo.protor.availibleUsers
 
     def refresh(self):
         self.getNamesLayout(self.getNames())
