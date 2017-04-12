@@ -37,12 +37,19 @@ class GoBoardUI(QWidget):
         btlose = QPushButton('Surrender')
         btlose.clicked.connect(self.maingo.protor.surrender)
         lt.addWidget(btlose)
+        btchangegame = QPushButton('Change Game')
+        btchangegame.clicked.connect(self.change_game)
+        lt.addWidget(btchangegame)
 
         board_size = 800
         step = 50
         self.maingo.goui.setFixedSize(board_size + step, board_size + step * 4)
         self.justBoard = JustBoardUI(self.maingo, board_size)
         layout.addWidget(self.justBoard)
+
+    def change_game(self):
+        self.maingo.protor.surrender()
+        #self.maingo.goui.authorizeWidget.answerRequest('authok')
 
     def getLabelWithFont(self, s, fontSize):
         label = QLabel(s)

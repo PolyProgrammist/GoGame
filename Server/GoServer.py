@@ -89,20 +89,25 @@ class GoServer:
             else:
                 runs = False
                 cl.running = False
-                if cl.name in self.states:
-                    self.lose(cl.name)
-                    name1 = self.states[cl.name].name1
-                    name2 = self.states[cl.name].name2
-                    del self.states[name1]
-                    del self.states[name2]
+                self.lose(cl.name)
                 del self.clients[cl.name]
                 self.sendall({})
 
+    def destroy_game(self, username):
+        if username in self.states:
+            name1 = self.states[username].name1
+            name2 = self.states[username].name2
+            del self.states[name1]
+            del self.states[name2]
+
     def lose(self, looser):
+        if looser not in self.states:
+            return
         if self.states[looser].name1 == looser:
             winner = self.states[looser].name2
         else:
             winner = self.states[looser].name1
+        self.destroy_game(looser)
         self.snd(self.clients[looser].c, 'lose')
         self.snd(self.clients[winner].c, 'win')
 
