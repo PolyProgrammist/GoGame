@@ -9,23 +9,30 @@ class Protogo:
         self.availibleUsers = []
         self.q = Queue()
     def receive(self):
-        self.t = self.q.get()
-        if (self.t == 'end'):
+        t = self.q.get()
+        if (t == 'end'):
             self.connector.finish()
-        if self.t.find('connect') == 0:
+        if t.find('connect') == 0:
+            t = t[8:]
+            self.othername = t[:t.find(' ')]
+            t = t[t.find(' ') + 1:]
+            self.step = int(t)
+            print(self.step)
             self.maingo.goui.connectWidget.startGame()
-        if self.t.find('go') == 0:
-            ind = self.t.find(' ', 3)
-            one = int(self.t[3:ind])
-            two = int(self.t[ind + 1:])
+        if t.find('go') == 0:
+            ind = t.find(' ', 3)
+            one = int(t[3:ind])
+            two = int(t[ind + 1:])
+            self.step = not self.step
             self.maingo.goui.gameWidget.justBoard.letsgo((one, two))
-        if self.t.find('list') == 0:
-            self.availibleUsers = [i for i in self.t[5:].split(' ') if i != '']
+        if t.find('list') == 0:
+            self.availibleUsers = [i for i in t[5:].split(' ') if i != '']
             self.maingo.goui.connectWidget.refresh()
-        if self.t.find('auth') == 0:
-            self.maingo.goui.authorizeWidget.answerRequest(self.t)
+        if t.find('auth') == 0:
+            self.maingo.goui.authorizeWidget.answerRequest(t)
 
     def auth(self, name):
+        self.myname = name
         self.connector.snd('auth ' + name)
     def get_list(self):
         self.connector.snd('list')

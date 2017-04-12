@@ -3,9 +3,12 @@ import sys
 from PyQt5.QtCore import QRect
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QColor
+from PyQt5.QtGui import QFont
 from PyQt5.QtGui import QPainter
 from PyQt5.QtGui import QPalette
 from PyQt5.QtWidgets import QApplication
+from PyQt5.QtWidgets import QHBoxLayout
+from PyQt5.QtWidgets import QLabel
 from PyQt5.QtWidgets import QPushButton
 from PyQt5.QtWidgets import QVBoxLayout
 from PyQt5.QtWidgets import QWidget
@@ -20,14 +23,32 @@ class GoBoardUI(QWidget):
     def recreate(self):
         layout = QVBoxLayout()
         self.setLayout(layout)
-        self.buttonHello = QPushButton('hello')
-        layout.addWidget(self.buttonHello)
+        lt = QHBoxLayout()
+        layout.addLayout(lt)
+        self.labmy = self.getLabelWithFont('You: ' + self.maingo.protor.myname, 20)
+        self.laboth = self.getLabelWithFont('Opponent: ' + self.maingo.protor.othername, 20)
+        self.labstep = self.getLabelWithFont('Step: ' + ('You' if self.maingo.protor.step else 'Opponent'), 20)
+        lt.addWidget(self.labmy)
+        lt.addWidget(self.laboth)
+        lt.addWidget(self.labstep)
         layout.setAlignment(Qt.AlignCenter)
+
         board_size = 800
         step = 50
         self.maingo.goui.setFixedSize(board_size + step, board_size + step * 4)
         self.justBoard = JustBoardUI(self.maingo, board_size)
         layout.addWidget(self.justBoard)
+
+    def getLabelWithFont(self, s, fontSize):
+        label = QLabel(s)
+        self.setFontSize(label, fontSize)
+        return label
+
+    def setFontSize(self, label, fontSize):
+        font = QFont()
+        font.setPointSize(fontSize)
+        label.setFont(font)
+
 
 class JustBoardUI(QWidget):
     gost = GoState.GoState()
@@ -84,6 +105,7 @@ class JustBoardUI(QWidget):
 
     def letsgo(self, t):
         self.gost.try_pas(t, self.gost.now_color)
+        self.maingo.goui.gameWidget.labstep.setText('Step: ' + ('You' if self.maingo.protor.step else 'Opponent'))
         self.update()
 
     def printtable(self):
