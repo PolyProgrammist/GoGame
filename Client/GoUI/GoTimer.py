@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import QFrame
 from PyQt5.QtWidgets import QLCDNumber
 
 class Timer:
-    initsec = 5
+    initsec = 30
     gosec = 10
     def __init__(self, maingo, layout, turn):
         self.lcd = QLCDNumber()

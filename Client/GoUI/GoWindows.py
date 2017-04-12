@@ -4,6 +4,7 @@ from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import  QApplication
 from PyQt5.QtWidgets import QHBoxLayout
 from PyQt5.QtWidgets import QLabel
+from PyQt5.QtWidgets import QLayout
 from PyQt5.QtWidgets import QLineEdit
 from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtWidgets import QPushButton
@@ -26,16 +27,24 @@ class GOQT(QWidget):
     def initUI(self):
         self.move(0, 0)
         self.setWindowTitle('Go')
+
+        self.hb = QHBoxLayout()
+        self.hb.setContentsMargins(0, 0, 0, 0)
+        self.oldSizeConstraing = self.hb.sizeConstraint()
+
         self.stack = QStackedWidget()
         self.authorizeWidget = AuthorizeWidget(self.maingo, self)
         self.changeWidget(self.authorizeWidget)
-        hb = QHBoxLayout()
-        hb.addWidget(self.stack)
 
-        self.setLayout(hb)
+        self.hb.addWidget(self.stack)
+        self.setLayout(self.hb)
         self.show()
 
-    def changeWidget(self, widget):
+    def changeWidget(self, widget, oldsize=True):
+        if oldsize:
+            self.hb.setSizeConstraint(self.oldSizeConstraing)
+        else:
+            self.hb.setSizeConstraint(QLayout.SetFixedSize)
         if self.stack.currentWidget() != 0:
             self.stack.removeWidget(self.stack.currentWidget())
         self.stack.addWidget(widget)
@@ -161,4 +170,4 @@ class ConnectWidget(QWidget):
         #self.mainWidget.changeWidget(self.mainWidget.gameWidget)
     def startGame(self):
         self.maingo.goui.gameWidget = GoBoardUI(self.maingo)
-        self.mainWidget.changeWidget(self.maingo.goui.gameWidget)
+        self.mainWidget.changeWidget(self.maingo.goui.gameWidget, False)

@@ -4,6 +4,7 @@ from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QFrame
 from PyQt5.QtWidgets import QHBoxLayout
 from PyQt5.QtWidgets import QLabel
+from PyQt5.QtWidgets import QLayout
 from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtWidgets import QPushButton
 from PyQt5.QtWidgets import QVBoxLayout
@@ -18,8 +19,11 @@ class GoBoardUI(QWidget):
         super().__init__()
         self.maingo = maingo
         self.layout = QVBoxLayout()
+
+        self.layout.setContentsMargins(0, 0, 0, 0)
+        self.layout.setSizeConstraint(QLayout.SetFixedSize)
+
         self.setLayout(self.layout)
-        self.layout.setAlignment(Qt.AlignCenter)
         self.setlabels()
         self.setbuttons()
         self.setboard()
@@ -62,7 +66,7 @@ class GoBoardUI(QWidget):
     def setboard(self):
         board_size = 800
         step = 50
-        self.maingo.goui.setFixedSize(board_size + step, board_size + step * 4)
+        self.maingo.goui.setFixedWidth(board_size)
         self.justBoard = JustBoardUI(self.maingo, board_size, self)
         self.layout.addWidget(self.justBoard)
 
