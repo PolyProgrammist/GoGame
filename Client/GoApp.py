@@ -2,7 +2,7 @@ import sys
 
 from PyQt5.QtWidgets import QApplication
 
-from Client.Connection.Protogo import Protogo
+from Client.Connection.GoProto import Protogo
 from Client.GoUI.GoWindows import GOQT
 
 

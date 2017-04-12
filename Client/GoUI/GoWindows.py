@@ -162,9 +162,3 @@ class ConnectWidget(QWidget):
     def startGame(self):
         self.maingo.goui.gameWidget = GoBoardUI(self.maingo)
         self.mainWidget.changeWidget(self.maingo.goui.gameWidget)
-
-
-if __name__ == '__main__':
-    app = QApplication([])
-    go = GOQT()
-    sys.exit(app.exec_())

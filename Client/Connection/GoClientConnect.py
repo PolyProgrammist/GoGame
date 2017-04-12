@@ -63,6 +63,3 @@ class GoClientConnect:
     def finish(self):
         self.working = False
         self.s.close()
-
-if __name__ == "__main__":
-    GoClientConnect()

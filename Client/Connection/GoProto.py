@@ -23,6 +23,8 @@ class Protogo:
             one = int(t[3:ind])
             two = int(t[ind + 1:])
             self.step = not self.step
+            self.maingo.goui.gameWidget.timmy.go()
+            self.maingo.goui.gameWidget.timop.go()
             self.maingo.goui.gameWidget.justBoard.letsgo((one, two))
         if t.find('list') == 0:
             self.availibleUsers = [i for i in t[5:].split(' ') if i != '']

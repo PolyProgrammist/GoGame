@@ -1,13 +1,16 @@
 import sys
 
 from PyQt5.QtCore import QRect
+from PyQt5.QtCore import QTimer
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QColor
 from PyQt5.QtGui import QFont
 from PyQt5.QtGui import QPainter
 from PyQt5.QtGui import QPalette
 from PyQt5.QtWidgets import QApplication
+from PyQt5.QtWidgets import QFrame
 from PyQt5.QtWidgets import QHBoxLayout
+from PyQt5.QtWidgets import QLCDNumber
 from PyQt5.QtWidgets import QLabel
 from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtWidgets import QPushButton
@@ -21,29 +24,54 @@ class GoBoardUI(QWidget):
     def __init__(self, maingo):
         super().__init__()
         self.maingo = maingo
-        layout = QVBoxLayout()
-        self.setLayout(layout)
+        self.layout = QVBoxLayout()
+        self.setLayout(self.layout)
+        self.layout.setAlignment(Qt.AlignCenter)
+        self.setlabels()
+        self.setbuttons()
+        self.setboard()
+
+    def setlabels(self):
         lt = QHBoxLayout()
-        layout.addLayout(lt)
+        self.layout.addLayout(lt)
         self.labmy = self.getLabelWithFont('You: ' + self.maingo.protor.myname, 20)
-        self.laboth = self.getLabelWithFont('Opponent: ' + self.maingo.protor.othername, 20)
+        self.labop = self.getLabelWithFont('Opponent: ' + self.maingo.protor.othername, 20)
         self.labstep = self.getLabelWithFont('', 20)
-        lt.addWidget(self.labmy)
-        lt.addWidget(self.laboth)
+
+        ltmy = QHBoxLayout()
+        ltop = QHBoxLayout()
+        ltmy.addWidget(self.labmy)
+        self.timmy = Timer(self.maingo, ltmy, self.maingo.protor.step)
+        ltop.addWidget(self.labop)
+        self.timop = Timer(self.maingo, ltop, not self.maingo.protor.step)
+
+        lt.addLayout(ltmy)
+        lt.addLayout(ltop)
         lt.addWidget(self.labstep)
-        layout.setAlignment(Qt.AlignCenter)
+
+
+    def setbuttons(self):
+        lt = QHBoxLayout()
+        self.layout.addLayout(lt)
 
         btlose = QPushButton('Surrender')
-        btlose.clicked.connect(self.maingo.protor.surrender)
-        lt.addWidget(btlose)
         btchangegame = QPushButton('Change Game')
+
+        btlose.clicked.connect(self.maingo.protor.surrender)
         btchangegame.clicked.connect(self.change_game)
+
+        self.setFontSize(btlose, 16)
+        self.setFontSize(btchangegame, 16)
+
+        lt.addWidget(btlose)
         lt.addWidget(btchangegame)
+
+    def setboard(self):
         board_size = 800
         step = 50
         self.maingo.goui.setFixedSize(board_size + step, board_size + step * 4)
         self.justBoard = JustBoardUI(self.maingo, board_size, self)
-        layout.addWidget(self.justBoard)
+        self.layout.addWidget(self.justBoard)
 
     def change_game(self):
         self.maingo.protor.surrender()
@@ -64,6 +92,41 @@ class GoBoardUI(QWidget):
         QMessageBox.about(self, 'Win', 'You win!')
     def lose(self):
         QMessageBox.about(self, 'Lose', 'You lose!')
+
+class Timer:
+    initsec = 30
+    gosec = 10
+    def __init__(self, maingo, layout, turn):
+        self.lcd = QLCDNumber()
+        self.sec = self.initsec
+        self.turn = turn
+        self.updui()
+        self.lcd.setFrameStyle(QFrame.NoFrame)
+        self.maingo = maingo
+        timer = QTimer(self.maingo.goui)
+        timer.timeout.connect(self.count_time)
+        timer.start(1000)
+        layout.addWidget(self.lcd)
+
+    def get_stime(self, seconds):
+        min = seconds // 60
+        sec = seconds % 60
+        return '{:0>2}'.format(min) + ':' + '{:0>2}'.format(sec)
+
+    def updui(self):
+        self.lcd.display(self.get_stime(self.sec))
+
+    def count_time(self):
+        if not self.turn:
+            return
+        self.sec -= 1
+        print(self.get_stime(self.sec))
+        self.updui()
+
+    def go(self):
+        self.turn = not self.turn
+        if self.turn:
+            self.sec += self.gosec
 
 
 class JustBoardUI(QWidget):
@@ -200,8 +263,3 @@ class JustBoardUI(QWidget):
                     cl = self.stone_Q_color[self.gost.places[i][j]]
                     painter.setBrush(cl)
                     painter.drawEllipse(self.get_Qrect(x, y, r))
-
-if __name__ == '__main__':
-    app = QApplication([])
-    goqt = GoBoardUI(5)
-    sys.exit(app.exec_())
