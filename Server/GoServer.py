@@ -83,24 +83,28 @@ class GoServer:
                         self.snd(self.clients[cl.name].c, 'list ' + self.getUserList(cl))
 
                     if t.find('surrender') == 0:
-                        looser = cl.name
-                        if self.states[cl.name].name1 == looser:
-                            winner = self.states[cl.name].name2
-                        else:
-                            winner = self.states[cl.name].name1
-                        self.snd(self.clients[looser].c, 'lose')
-                        self.snd(self.clients[winner].c, 'win')
+                        self.lose(cl.name)
+
 
             else:
                 runs = False
                 cl.running = False
-                del self.clients[cl.name]
                 if cl.name in self.states:
+                    self.lose(cl.name)
                     name1 = self.states[cl.name].name1
                     name2 = self.states[cl.name].name2
                     del self.states[name1]
                     del self.states[name2]
+                del self.clients[cl.name]
                 self.sendall({})
+
+    def lose(self, looser):
+        if self.states[looser].name1 == looser:
+            winner = self.states[looser].name2
+        else:
+            winner = self.states[looser].name1
+        self.snd(self.clients[looser].c, 'lose')
+        self.snd(self.clients[winner].c, 'win')
 
     def getUserList(self, cl):
         t =  ' '.join([key for key in self.clients if key not in self.states and key != cl.name
@@ -124,8 +128,11 @@ class GoServer:
         self.s.close()
 
     def snd(self, s, st):
-        print('sended ' + st)
-        s.send(bytearray(st, 'utf-8'))
+        try:
+            s.send(bytearray(st, 'utf-8'))
+            print('sended ' + st)
+        except:
+            pass
     def rcv(self, cl):
         while self.working:
             try:
@@ -133,7 +140,7 @@ class GoServer:
                 if len(t):
                     return t
             except:
-                return ""
+                return ''
 
 
 if __name__ == "__main__":
