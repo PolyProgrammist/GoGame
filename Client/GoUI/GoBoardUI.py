@@ -33,7 +33,6 @@ class GoBoardUI(QWidget):
         self.layout.addLayout(lt)
         self.labmy = self.getLabelWithFont('You: ' + self.maingo.protor.myname, 20)
         self.labop = self.getLabelWithFont('Opponent: ' + self.maingo.protor.othername, 20)
-        self.labstep = self.getLabelWithFont('', 20)
 
         ltmy = QHBoxLayout()
         ltop = QHBoxLayout()
@@ -44,7 +43,6 @@ class GoBoardUI(QWidget):
 
         lt.addLayout(ltmy)
         lt.addLayout(ltop)
-        lt.addWidget(self.labstep)
 
 
     def setbuttons(self):
@@ -95,8 +93,7 @@ class GoBoardUI(QWidget):
     def gameover(self):
         self.timmy.timer.stop()
         self.timop.timer.stop()
-        lab = self.labstep
-        lab.setStyleSheet("QLabel { color : blue; }")
-        lab.setText('Game over')
+        self.justBoard.set_lab_color(self.labmy, 2)
+        self.justBoard.set_lab_color(self.labop, 2)
 
 
