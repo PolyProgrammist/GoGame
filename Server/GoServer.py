@@ -59,7 +59,7 @@ class GoServer:
                     cl.set_name(t[5:])
                     self.clients[cl.name] = cl
                     self.snd(cl.c, 'authok')
-                    self.sendall()
+                    self.sendall({cl})
                 if cl.authorized:
                     if t.find("connect") == 0:
                         op = t[8:]
@@ -91,18 +91,19 @@ class GoServer:
                     name2 = self.states[cl.name].name2
                     del self.states[name1]
                     del self.states[name2]
-                self.sendall()
+                self.sendall({})
 
     def getUserList(self, cl):
         t =  ' '.join([key for key in self.clients if key not in self.states and key != cl.name
               and self.clients[key].authorized])
         return t
 
-    def sendall(self):
+    def sendall(self, donot):
         for client in self.clients:
-            p = self.clients[client]
-            if p.authorized:
-                self.snd(p.c, 'list ' + self.getUserList(p))
+            if not client in donot:
+                p = self.clients[client]
+                if p.authorized:
+                    self.snd(p.c, 'list ' + self.getUserList(p))
 
     def finish(self):
         self.working = False

@@ -17,7 +17,6 @@ class Protogo:
             self.othername = t[:t.find(' ')]
             t = t[t.find(' ') + 1:]
             self.step = int(t)
-            print(self.step)
             self.maingo.goui.connectWidget.startGame()
         if t.find('go') == 0:
             ind = t.find(' ', 3)
@@ -33,10 +32,15 @@ class Protogo:
 
     def auth(self, name):
         self.myname = name
-        self.connector.snd('auth ' + name)
+        self.send('auth ' + name)
     def get_list(self):
-        self.connector.snd('list')
+        self.send('list')
     def connect(self, user):
-        self.connector.snd('connect ' + user)
+        self.send('connect ' + user)
     def go(self, t):
-        self.connector.snd('go ' + str(t[0]) + ' ' + str(t[1]))
+        self.send('go ' + str(t[0]) + ' ' + str(t[1]))
+    def surrender(self):
+        self.send('surrender')
+
+    def send(self, t):
+        self.connector.snd(t)

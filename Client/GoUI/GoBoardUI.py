@@ -27,11 +27,15 @@ class GoBoardUI(QWidget):
         layout.addLayout(lt)
         self.labmy = self.getLabelWithFont('You: ' + self.maingo.protor.myname, 20)
         self.laboth = self.getLabelWithFont('Opponent: ' + self.maingo.protor.othername, 20)
-        self.labstep = self.getLabelWithFont('Step: ' + ('You' if self.maingo.protor.step else 'Opponent'), 20)
+        self.labstep = self.getLabelWithFont('', 20)
         lt.addWidget(self.labmy)
         lt.addWidget(self.laboth)
         lt.addWidget(self.labstep)
         layout.setAlignment(Qt.AlignCenter)
+
+        btlose = QPushButton('Surrender')
+        btlose.clicked.connect(self.maingo.protor.surrender)
+        lt.addWidget(btlose)
 
         board_size = 800
         step = 50
@@ -64,6 +68,7 @@ class JustBoardUI(QWidget):
     def __init__(self, maingo, board_display_size):
         super().__init__()
         self.maingo = maingo
+        self.change_step_widget()
         self.board_display_size = board_display_size
         tw = board_display_size
         self.calc_constants()
@@ -105,8 +110,16 @@ class JustBoardUI(QWidget):
 
     def letsgo(self, t):
         self.gost.try_pas(t, self.gost.now_color)
-        self.maingo.goui.gameWidget.labstep.setText('Step: ' + ('You' if self.maingo.protor.step else 'Opponent'))
+        self.change_step_widget()
         self.update()
+
+    def change_step_widget(self):
+        lab = self.maingo.goui.gameWidget.labstep
+        lab.setText('Turn: ' + ('You' if self.maingo.protor.step else 'Opponent'))
+        if self.maingo.protor.step:
+            lab.setStyleSheet("QLabel { color : green; }")
+        else:
+            lab.setStyleSheet("QLabel { color : red; }")
 
     def printtable(self):
         for i in self.places:
