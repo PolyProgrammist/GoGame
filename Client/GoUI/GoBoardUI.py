@@ -93,7 +93,18 @@ class GoBoardUI(QWidget):
     def gameover(self):
         self.timmy.timer.stop()
         self.timop.timer.stop()
-        self.justBoard.set_lab_color(self.labmy, 2)
-        self.justBoard.set_lab_color(self.labop, 2)
+        self.set_lab_color(self.labmy, 2)
+        self.set_lab_color(self.labop, 2)
+
+    def get_string_style(self, step):
+        return 'QLabel { color : ' + ('green' if step == 1 else 'red' if step == 0 else 'blue') + '; }'
+
+    def set_lab_color(self, lab, step):
+        lab.setStyleSheet(self.get_string_style(step))
+
+    def change_step_widget(self):
+        step = self.maingo.protor.step
+        self.set_lab_color(self.labmy, step)
+        self.set_lab_color(self.labop, not step)
 
 

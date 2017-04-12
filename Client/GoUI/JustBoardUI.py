@@ -20,7 +20,7 @@ class JustBoardUI(QWidget):
         self.board_places = self.gost.board_size + 1
         self.gameWidget = gameWidget
         self.maingo = maingo
-        self.change_step_widget()
+        self.gameWidget.change_step_widget()
         self.board_display_size = board_display_size
         tw = board_display_size
         self.calc_constants()
@@ -62,19 +62,8 @@ class JustBoardUI(QWidget):
 
     def letsgo(self, t):
         self.gost.try_pas(t, self.gost.now_color)
-        self.change_step_widget()
+        self.gameWidget.change_step_widget()
         self.update()
-
-    def get_string_style(self, step):
-        return 'QLabel { color : ' + ('green' if step == 1 else 'red' if step == 0 else 'blue') + '; }'
-
-    def set_lab_color(self, lab, step):
-        lab.setStyleSheet(self.get_string_style(step))
-
-    def change_step_widget(self):
-        step = self.maingo.protor.step
-        self.set_lab_color(self.gameWidget.labmy, step)
-        self.set_lab_color(self.gameWidget.labop, not step)
 
     def printtable(self):
         for i in self.places:
