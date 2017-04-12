@@ -30,6 +30,8 @@ class Protogo:
             self.availibleUsers = [i for i in t[5:].split(' ') if i != '']
             self.maingo.goui.connectWidget.refresh()
         if t.find('auth') == 0:
+            if t.find('authok') == 0:
+                self.maingo.name = t[7:]
             self.maingo.goui.authorizeWidget.answerRequest(t)
         if t == 'win':
             self.maingo.goui.gameWidget.win()
@@ -37,7 +39,6 @@ class Protogo:
             self.maingo.goui.gameWidget.lose()
 
     def auth(self, name):
-        self.myname = name
         self.send('auth ' + name)
     def get_list(self):
         self.send('list')

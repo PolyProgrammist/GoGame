@@ -22,6 +22,7 @@ class Client:
 class GoServer:
     clients = {}
     states = {}
+    guestCount = 0
     def __init__(self):
         self.s = socket.socket()         # Create a socket object
         self.host = socket.gethostname() # Get local machine name
@@ -56,13 +57,16 @@ class GoServer:
                 print(cl.name + ' ::  ' + t)
                 if t.find("auth") == 0:
                     tst = t[5:]
+                    if tst == 'guest':
+                        self.guestCount += 1
+                        tst += str(self.guestCount)
                     if tst in self.clients:
                         self.snd(cl.c, 'autherror')
                         continue
                     del self.clients[cl.name]
-                    cl.set_name(t[5:])
+                    cl.set_name(tst)
                     self.clients[cl.name] = cl
-                    self.snd(cl.c, 'authok')
+                    self.snd(cl.c, 'authok ' + tst)
                     self.clients[cl.name].looking = True
                     self.sendall()
                 if cl.authorized:
@@ -126,9 +130,12 @@ class GoServer:
         return ' '.join([name for name, client in self.clients.items() if client.looking and name != outname])
 
     def sendall(self):
-        for name, client in self.clients.items():
-            if client.looking:
-                self.snd(client.c, 'list ' + self.getUserList(name))
+        try:
+            for name, client in self.clients.items():
+                if client.looking:
+                    self.snd(client.c, 'list ' + self.getUserList(name))
+        except:
+            pass
 
     def finish(self):
         self.working = False

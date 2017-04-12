@@ -55,7 +55,7 @@ class AuthorizeWidget(QWidget):
         super().__init__()
         self.maingo = maingo
         self.mainWidget = mainWidget
-        self.mainWidget.setFixedSize(200, 200)
+        self.mainWidget.setFixedSize(200, 100)
         self.setLayout(self.authorizeLayout())
 
     def authorizeLayout(self):
@@ -74,14 +74,15 @@ class AuthorizeWidget(QWidget):
 
     def changeWidget(self, tfName):
         text = tfName.text()
-        if tfName.text() == '':
-            QMessageBox.critical(self, 'Go', "You have not entered a name")
-            return
+        if text == '':
+            text = 'guest'
         self.maingo.protor.auth(text)
         self.maingo.name = text
 
     def answerRequest(self, answer):
-        if answer == 'authok':
+        if answer.find('authok') == 0:
+            answer = answer[7:]
+            self.maingo.protor.myname = answer
             self.maingo.goui.connectWidget = ConnectWidget(self.maingo)
             self.mainWidget.changeWidget(self.maingo.goui.connectWidget)
         else:
