@@ -29,6 +29,10 @@ class Protogo:
             self.maingo.goui.connectWidget.refresh()
         if t.find('auth') == 0:
             self.maingo.goui.authorizeWidget.answerRequest(t)
+        if t == 'win':
+            self.maingo.goui.gameWidget.win()
+        if t == 'lose':
+            self.maingo.goui.gameWidget.lose()
 
     def auth(self, name):
         self.myname = name

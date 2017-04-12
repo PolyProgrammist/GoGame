@@ -82,6 +82,15 @@ class GoServer:
                     if t.find('list') == 0:
                         self.snd(self.clients[cl.name].c, 'list ' + self.getUserList(cl))
 
+                    if t.find('surrender') == 0:
+                        looser = cl.name
+                        if self.states[cl.name].name1 == looser:
+                            winner = self.states[cl.name].name2
+                        else:
+                            winner = self.states[cl.name].name1
+                        self.snd(self.clients[looser].c, 'lose')
+                        self.snd(self.clients[winner].c, 'win')
+
             else:
                 runs = False
                 cl.running = False

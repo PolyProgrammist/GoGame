@@ -9,6 +9,7 @@ from PyQt5.QtGui import QPalette
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtWidgets import QHBoxLayout
 from PyQt5.QtWidgets import QLabel
+from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtWidgets import QPushButton
 from PyQt5.QtWidgets import QVBoxLayout
 from PyQt5.QtWidgets import QWidget
@@ -52,6 +53,11 @@ class GoBoardUI(QWidget):
         font = QFont()
         font.setPointSize(fontSize)
         label.setFont(font)
+
+    def win(self):
+        QMessageBox.about(self, 'Win', 'You win!')
+    def lose(self):
+        QMessageBox.about(self, 'Lose', 'You lose!')
 
 
 class JustBoardUI(QWidget):
