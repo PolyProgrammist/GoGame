@@ -99,14 +99,14 @@ class ConnectWidget(QWidget):
 
     def findMateLayout(self):
         layout = QVBoxLayout()
-        refresh = QPushButton('Refresh')
         self.vl = QVBoxLayout()
         from PyQt5.QtCore import Qt
         self.vl.setAlignment(Qt.AlignTop)
-        refresh.clicked.connect(self.maingo.protor.get_list)
+        # refresh = QPushButton('Refresh')
+        # refresh.clicked.connect(self.maingo.protor.get_list)
+        # layout.addWidget(refresh)
         s = ('You are: ' + self.maingo.name)
         layout.addWidget(self.getLabelWithFont(s, 14))
-        layout.addWidget(refresh)
         layout.addWidget(self.getScrollWidget())
         return layout
 
