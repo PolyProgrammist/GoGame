@@ -21,7 +21,6 @@ class GoBoardUI(QWidget):
     def __init__(self, maingo):
         super().__init__()
         self.maingo = maingo
-    def recreate(self):
         layout = QVBoxLayout()
         self.setLayout(layout)
         lt = QHBoxLayout()
@@ -40,16 +39,15 @@ class GoBoardUI(QWidget):
         btchangegame = QPushButton('Change Game')
         btchangegame.clicked.connect(self.change_game)
         lt.addWidget(btchangegame)
-
         board_size = 800
         step = 50
         self.maingo.goui.setFixedSize(board_size + step, board_size + step * 4)
-        self.justBoard = JustBoardUI(self.maingo, board_size)
+        self.justBoard = JustBoardUI(self.maingo, board_size, self)
         layout.addWidget(self.justBoard)
 
     def change_game(self):
         self.maingo.protor.surrender()
-        #self.maingo.goui.authorizeWidget.answerRequest('authok')
+        self.maingo.goui.authorizeWidget.answerRequest('authok')
 
     def getLabelWithFont(self, s, fontSize):
         label = QLabel(s)
@@ -78,8 +76,9 @@ class JustBoardUI(QWidget):
 
     need_now_stone = False
 
-    def __init__(self, maingo, board_display_size):
+    def __init__(self, maingo, board_display_size, gameWidget):
         super().__init__()
+        self.gameWidget = gameWidget
         self.maingo = maingo
         self.change_step_widget()
         self.board_display_size = board_display_size
@@ -127,7 +126,7 @@ class JustBoardUI(QWidget):
         self.update()
 
     def change_step_widget(self):
-        lab = self.maingo.goui.gameWidget.labstep
+        lab = self.gameWidget.labstep
         lab.setText('Turn: ' + ('You' if self.maingo.protor.step else 'Opponent'))
         if self.maingo.protor.step:
             lab.setStyleSheet("QLabel { color : green; }")
@@ -172,12 +171,6 @@ class JustBoardUI(QWidget):
         painter = QPainter(self)
         painter.setBrush(QColor(100, 100, 100))
         self.redraw_background(painter)
-
-
-
-    def draw_transparent_stone(self, painter, pos):
-        painter = QPainter()
-        painter.drawEllipse()
 
     def get_Qrect(self, x, y, r):
         return QRect(x - r, y - r, 2 * r, 2 * r)

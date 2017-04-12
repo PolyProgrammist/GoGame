@@ -4,10 +4,10 @@ from queue import Queue
 
 class Protogo:
     def __init__(self, maingo):
+        self.q = Queue()
         self.connector = GoClientConnect(maingo, self)
         self.maingo = maingo
         self.availibleUsers = []
-        self.q = Queue()
     def receive(self):
         t = self.q.get()
         if (t == 'end'):

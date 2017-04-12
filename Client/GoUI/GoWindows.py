@@ -26,15 +26,8 @@ class GOQT(QWidget):
     def initUI(self):
         self.move(0, 0)
         self.setWindowTitle('Go')
-        self.authorizeWidget = AuthorizeWidget(self, self.maingo)
-        self.connectWidget = ConnectWidget(self, self.maingo)
-        self.gameWidget = GoBoardUI(self.maingo)
-
         self.stack = QStackedWidget()
-        self.stack.addWidget(self.authorizeWidget)
-        self.stack.addWidget(self.connectWidget)
-        self.stack.addWidget(self.gameWidget)
-
+        self.authorizeWidget = AuthorizeWidget(self.maingo, self)
         self.changeWidget(self.authorizeWidget)
         hb = QHBoxLayout()
         hb.addWidget(self.stack)
@@ -43,16 +36,16 @@ class GOQT(QWidget):
         self.show()
 
     def changeWidget(self, widget):
-        widget.recreate()
+        if self.stack.currentWidget() != 0:
+            self.stack.removeWidget(self.stack.currentWidget())
+        self.stack.addWidget(widget)
         self.stack.setCurrentWidget(widget)
 
 class AuthorizeWidget(QWidget):
-    def __init__(self, mainWidget, maingo):
+    def __init__(self, maingo, mainWidget):
         super().__init__()
-        self.mainWidget = mainWidget
         self.maingo = maingo
-
-    def recreate(self):
+        self.mainWidget = mainWidget
         self.mainWidget.setFixedSize(200, 200)
         self.setLayout(self.authorizeLayout())
 
@@ -80,17 +73,16 @@ class AuthorizeWidget(QWidget):
 
     def answerRequest(self, answer):
         if answer == 'authok':
-            self.mainWidget.changeWidget(self.mainWidget.connectWidget)
+            self.maingo.goui.connectWidget = ConnectWidget(self.maingo)
+            self.mainWidget.changeWidget(self.maingo.goui.connectWidget)
         else:
             QMessageBox.critical(self, 'Go', "This user already exists")
 
 class ConnectWidget(QWidget):
-    def __init__(self, mainWidget, maingo):
+    def __init__(self, maingo):
         super().__init__()
-        self.mainWidget = mainWidget
         self.maingo = maingo
-
-    def recreate(self):
+        self.mainWidget = self.maingo.goui
         self.mainWidget.setFixedSize(350, 350)
         self.setLayout(self.findMateLayout())
 
@@ -166,7 +158,8 @@ class ConnectWidget(QWidget):
         self.maingo.protor.connect(user)
         #self.mainWidget.changeWidget(self.mainWidget.gameWidget)
     def startGame(self):
-        self.mainWidget.changeWidget(self.mainWidget.gameWidget)
+        self.maingo.goui.gameWidget = GoBoardUI(self.maingo)
+        self.mainWidget.changeWidget(self.maingo.goui.gameWidget)
 
 
 if __name__ == '__main__':
