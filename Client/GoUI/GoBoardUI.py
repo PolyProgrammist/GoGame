@@ -47,6 +47,7 @@ class GoBoardUI(QWidget):
 
     def change_game(self):
         self.maingo.protor.surrender()
+        self.maingo.protor.get_list()
         self.maingo.goui.authorizeWidget.answerRequest('authok')
 
     def getLabelWithFont(self, s, fontSize):
@@ -66,18 +67,18 @@ class GoBoardUI(QWidget):
 
 
 class JustBoardUI(QWidget):
-    gost = GoState.GoState()
     board_color = (0xC0, 0x40, 0x0)
     stone_color = ((50, 50, 50),(200, 200, 200))
     stone_Q_color = [QColor(*cl) for cl in stone_color]
     stone_diameter_fix = 0.9
 
-    board_places = gost.board_size + 1
 
     need_now_stone = False
 
     def __init__(self, maingo, board_display_size, gameWidget):
         super().__init__()
+        self.gost = GoState.GoState()
+        self.board_places = self.gost.board_size + 1
         self.gameWidget = gameWidget
         self.maingo = maingo
         self.change_step_widget()

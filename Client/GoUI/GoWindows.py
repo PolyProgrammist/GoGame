@@ -84,7 +84,9 @@ class ConnectWidget(QWidget):
         self.maingo = maingo
         self.mainWidget = self.maingo.goui
         self.mainWidget.setFixedSize(350, 350)
-        self.setLayout(self.findMateLayout())
+        self.find_mate_layout = self.findMateLayout()
+        self.clearLayout(self.vl)
+        self.setLayout(self.find_mate_layout)
 
     def findMateLayout(self):
         layout = QVBoxLayout()
@@ -92,7 +94,7 @@ class ConnectWidget(QWidget):
         self.vl = QVBoxLayout()
         from PyQt5.QtCore import Qt
         self.vl.setAlignment(Qt.AlignTop)
-        refresh.clicked.connect(lambda : self.maingo.protor.get_list())
+        refresh.clicked.connect(self.maingo.protor.get_list)
         s = ('You are: ' + self.maingo.name)
         layout.addWidget(self.getLabelWithFont(s, 14))
         layout.addWidget(refresh)
@@ -108,7 +110,7 @@ class ConnectWidget(QWidget):
     def getNamesLayout(self, names):
         self.clearLayout(self.vl)
         if len(names) == 0:
-            self.vl.addWidget(self.getLabelWithFont('No users online', 14))
+            self.vl.addWidget(self.getLabelWithFont('No availible opponnets', 14))
         for m in names:
             lbname = QLabel(m)
             self.setFontSize(lbname, 14)
