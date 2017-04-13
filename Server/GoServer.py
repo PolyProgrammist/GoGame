@@ -90,10 +90,16 @@ class GoServer:
                         ind = t.find(' ', 3)
                         one = int(t[3:ind])
                         two = int(t[ind + 1:])
+                        state = self.states[cl.name]
                         if self.states[cl.name].try_pas((one, two), cl.name == self.states[cl.name].name1):
-                            self.snd(self.clients[self.states[cl.name].name1].c, t)
-                            self.snd(self.clients[self.states[cl.name].name2].c, t)
-
+                            c1, c2 = self.clients[state.name1].c, self.clients[state.name2].c
+                            self.snd(c1, t)
+                            self.snd(c2, t)
+                            if not self.states[cl.name].can_any_go:
+                                print('game over for ' + cl.name)
+                                a, b = state.count_answer()
+                                looser = state.name2 if a > b else state.name1
+                                self.lose(looser)
                     if t.find('list') == 0:
                         self.clients[cl.name].looking = True
                         self.sendall()
