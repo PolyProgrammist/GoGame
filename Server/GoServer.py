@@ -13,6 +13,7 @@ class Client:
         self.running = True
         self.playing = False
         self.name = (str(self.addr))
+        self.looking = False
     def set_name(self, s):
         if not self.authorized:
             self.name = s
@@ -21,6 +22,7 @@ class Client:
 class GoServer:
     clients = {}
     states = {}
+    guestCount = 0
     def __init__(self):
         self.s = socket.socket()         # Create a socket object
         self.host = socket.gethostname() # Get local machine name
@@ -35,7 +37,10 @@ class GoServer:
                 break
             self.clients[str(cl.addr)] = cl     # Establish connection with client.
             print ('Got connection from', cl.addr)
-            threading.Thread(target=self.handleConnection, args=[cl]).start()
+            try:
+                threading.Thread(target=self.handleConnection, args=[cl]).start()
+            except:
+                pass
 
     def ent(self):
         while (True):
@@ -52,25 +57,35 @@ class GoServer:
                 print(cl.name + ' ::  ' + t)
                 if t.find("auth") == 0:
                     tst = t[5:]
+                    if tst == 'guest':
+                        self.guestCount += 1
+                        tst += str(self.guestCount)
                     if tst in self.clients:
                         self.snd(cl.c, 'autherror')
                         continue
                     del self.clients[cl.name]
-                    cl.set_name(t[5:])
+                    cl.set_name(tst)
                     self.clients[cl.name] = cl
-                    self.snd(cl.c, 'authok')
+                    self.snd(cl.c, 'authok ' + tst)
+                    self.clients[cl.name].looking = True
                     self.sendall()
                 if cl.authorized:
                     if t.find("connect") == 0:
                         op = t[8:]
                         name1 = cl.name
                         name2 = op
+
+                        self.clients[name1].looking = False
+                        self.clients[name2].looking = False
+
                         self.snd(self.clients[name1].c, 'connect ' + name2 + ' 1')
                         self.snd(self.clients[name2].c, 'connect ' + name1 + ' 0')
 
                         state = GoState.GoState(name1, name2)
                         self.states[name1] = state
                         self.states[name2] = state
+
+                        self.sendall()
                     if t.find("go") == 0 and cl.name in self.states:
                         ind = t.find(' ', 3)
                         one = int(t[3:ind])
@@ -80,37 +95,47 @@ class GoServer:
                             self.snd(self.clients[self.states[cl.name].name2].c, t)
 
                     if t.find('list') == 0:
-                        self.snd(self.clients[cl.name].c, 'list ' + self.getUserList(cl))
+                        self.clients[cl.name].looking = True
+                        self.sendall()
+
+                    if t.find('surrender') == 0:
+                        self.lose(cl.name)
 
             else:
                 runs = False
                 cl.running = False
+                self.lose(cl.name)
                 del self.clients[cl.name]
-                if cl.name in self.states:
-                    name1 = self.states[cl.name].name1
-                    name2 = self.states[cl.name].name2
-                    del self.states[name1]
-                    del self.states[name2]
                 self.sendall()
-                print('good bye' + cl.name)
 
-    def getUserList(self, cl):
-        print('getUserList')
-        print([name for name in self.clients])
-        t =  ' '.join([key for key in self.clients if key not in self.states and key != cl.name
-              and self.clients[key].authorized])
-        print(t)
-        print([name for name in self.clients])
-        return t
+    def destroy_game(self, username):
+        if username in self.states:
+            name1 = self.states[username].name1
+            name2 = self.states[username].name2
+            del self.states[name1]
+            del self.states[name2]
+
+    def lose(self, looser):
+        if looser not in self.states:
+            return
+        if self.states[looser].name1 == looser:
+            winner = self.states[looser].name2
+        else:
+            winner = self.states[looser].name1
+        self.destroy_game(looser)
+        self.snd(self.clients[looser].c, 'lose')
+        self.snd(self.clients[winner].c, 'win')
+
+    def getUserList(self, outname):
+        return ' '.join([name for name, client in self.clients.items() if client.looking and name != outname])
 
     def sendall(self):
-        print('startsendall')
-        for client in self.clients:
-            p = self.clients[client]
-            print('tryp' + client)
-            if p.authorized:
-                print('authorized')
-                self.snd(p.c, 'list ' + self.getUserList(p))
+        try:
+            for name, client in self.clients.items():
+                if client.looking:
+                    self.snd(client.c, 'list ' + self.getUserList(name))
+        except:
+            pass
 
     def finish(self):
         self.working = False
@@ -122,8 +147,11 @@ class GoServer:
         self.s.close()
 
     def snd(self, s, st):
-        print('sended ' + st)
-        s.send(bytearray(st, 'utf-8'))
+        try:
+            s.send(bytearray(st, 'utf-8'))
+            print('sended ' + st)
+        except:
+            pass
     def rcv(self, cl):
         while self.working:
             try:
@@ -131,7 +159,7 @@ class GoServer:
                 if len(t):
                     return t
             except:
-                return ""
+                return ''
 
 
 if __name__ == "__main__":

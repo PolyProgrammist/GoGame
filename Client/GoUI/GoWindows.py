@@ -4,6 +4,7 @@ from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import  QApplication
 from PyQt5.QtWidgets import QHBoxLayout
 from PyQt5.QtWidgets import QLabel
+from PyQt5.QtWidgets import QLayout
 from PyQt5.QtWidgets import QLineEdit
 from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtWidgets import QPushButton
@@ -26,34 +27,35 @@ class GOQT(QWidget):
     def initUI(self):
         self.move(0, 0)
         self.setWindowTitle('Go')
-        self.authorizeWidget = AuthorizeWidget(self, self.maingo)
-        self.connectWidget = ConnectWidget(self, self.maingo)
-        self.gameWidget = GoBoardUI(self.maingo)
+
+        self.hb = QHBoxLayout()
+        self.hb.setContentsMargins(0, 0, 0, 0)
+        self.oldSizeConstraing = self.hb.sizeConstraint()
 
         self.stack = QStackedWidget()
-        self.stack.addWidget(self.authorizeWidget)
-        self.stack.addWidget(self.connectWidget)
-        self.stack.addWidget(self.gameWidget)
-
+        self.authorizeWidget = AuthorizeWidget(self.maingo, self)
         self.changeWidget(self.authorizeWidget)
-        hb = QHBoxLayout()
-        hb.addWidget(self.stack)
 
-        self.setLayout(hb)
+        self.hb.addWidget(self.stack)
+        self.setLayout(self.hb)
         self.show()
 
-    def changeWidget(self, widget):
-        widget.recreate()
+    def changeWidget(self, widget, oldsize=True):
+        if oldsize:
+            self.hb.setSizeConstraint(self.oldSizeConstraing)
+        else:
+            self.hb.setSizeConstraint(QLayout.SetFixedSize)
+        if self.stack.currentWidget() != 0:
+            self.stack.removeWidget(self.stack.currentWidget())
+        self.stack.addWidget(widget)
         self.stack.setCurrentWidget(widget)
 
 class AuthorizeWidget(QWidget):
-    def __init__(self, mainWidget, maingo):
+    def __init__(self, maingo, mainWidget):
         super().__init__()
-        self.mainWidget = mainWidget
         self.maingo = maingo
-
-    def recreate(self):
-        self.mainWidget.setFixedSize(200, 200)
+        self.mainWidget = mainWidget
+        self.mainWidget.setFixedSize(200, 100)
         self.setLayout(self.authorizeLayout())
 
     def authorizeLayout(self):
@@ -71,43 +73,46 @@ class AuthorizeWidget(QWidget):
         return vl
 
     def changeWidget(self, tfName):
-        if tfName.text() == '':
-            QMessageBox.critical(self, 'Go', "You have not entered a name")
-            return
-        self.maingo.connector.snd('auth ' + tfName.text())
-        self.maingo.name = tfName.text()
+        text = tfName.text()
+        if text == '':
+            text = 'guest'
+        self.maingo.protor.auth(text)
+        self.maingo.name = text
 
     def answerRequest(self, answer):
-        if answer == 'authok':
-            self.mainWidget.changeWidget(self.mainWidget.connectWidget)
+        if answer.find('authok') == 0:
+            answer = answer[7:]
+            self.maingo.protor.myname = answer
+            self.maingo.goui.connectWidget = ConnectWidget(self.maingo)
+            self.mainWidget.changeWidget(self.maingo.goui.connectWidget)
         else:
             QMessageBox.critical(self, 'Go', "This user already exists")
 
 class ConnectWidget(QWidget):
-    def __init__(self, mainWidget, maingo):
+    def __init__(self, maingo):
         super().__init__()
-        self.mainWidget = mainWidget
         self.maingo = maingo
-
-    def recreate(self):
+        self.mainWidget = self.maingo.goui
         self.mainWidget.setFixedSize(350, 350)
-        self.setLayout(self.findMateLayout())
+        self.find_mate_layout = self.findMateLayout()
+        self.clearLayout(self.vl)
+        self.setLayout(self.find_mate_layout)
 
     def findMateLayout(self):
         layout = QVBoxLayout()
-        refresh = QPushButton('Refresh')
         self.vl = QVBoxLayout()
         from PyQt5.QtCore import Qt
         self.vl.setAlignment(Qt.AlignTop)
-        refresh.clicked.connect(lambda : self.maingo.connector.snd('list'))
+        # refresh = QPushButton('Refresh')
+        # refresh.clicked.connect(self.maingo.protor.get_list)
+        # layout.addWidget(refresh)
         s = ('You are: ' + self.maingo.name)
         layout.addWidget(self.getLabelWithFont(s, 14))
-        layout.addWidget(refresh)
         layout.addWidget(self.getScrollWidget())
         return layout
 
     def getNames(self):
-        return self.maingo.connector.availibleUsers
+        return self.maingo.protor.availibleUsers
 
     def refresh(self):
         self.getNamesLayout(self.getNames())
@@ -115,7 +120,7 @@ class ConnectWidget(QWidget):
     def getNamesLayout(self, names):
         self.clearLayout(self.vl)
         if len(names) == 0:
-            self.vl.addWidget(self.getLabelWithFont('No users online', 14))
+            self.vl.addWidget(self.getLabelWithFont('No availible opponnets', 14))
         for m in names:
             lbname = QLabel(m)
             self.setFontSize(lbname, 14)
@@ -162,13 +167,8 @@ class ConnectWidget(QWidget):
         return scroll
 
     def connectUser(self, user):
-        self.maingo.connector.snd('connect ' + user)
+        self.maingo.protor.connect(user)
         #self.mainWidget.changeWidget(self.mainWidget.gameWidget)
     def startGame(self):
-        self.mainWidget.changeWidget(self.mainWidget.gameWidget)
-
-
-if __name__ == '__main__':
-    app = QApplication([])
-    go = GOQT()
-    sys.exit(app.exec_())
+        self.maingo.goui.gameWidget = GoBoardUI(self.maingo)
+        self.mainWidget.changeWidget(self.maingo.goui.gameWidget, False)
