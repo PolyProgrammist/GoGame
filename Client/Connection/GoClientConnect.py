@@ -1,8 +1,6 @@
 import socket
-
-from PyQt5.QtCore import QThread
-from PyQt5.QtCore import QTimer
-from PyQt5.QtCore import pyqtSignal
+from Common.ServerInfo import *
+from PyQt5.QtCore import QThread, pyqtSignal
 
 class MyThread(QThread):
     trigger = pyqtSignal(int)
@@ -20,8 +18,8 @@ class GoClientConnect:
     def __init__(self, maingo, protor):
         self.maingo = maingo
         self.s = socket.socket()         # Create a socket object
-        host = socket.gethostname() # Get local machine name
-        port = 12345                # Reserve a port for your service.
+        host = server_ip # Get local machine name
+        port = server_port               # Reserve a port for your service.
         self.s.connect((host, port))
         self.working = True
         self.argument = (-1, -1)

@@ -2,6 +2,7 @@ import socket
 import threading
 
 from Common import GoState
+from Common.ServerInfo import *
 
 
 class Client:
@@ -25,8 +26,9 @@ class GoServer:
     guestCount = 0
     def __init__(self):
         self.s = socket.socket()         # Create a socket object
-        self.host = socket.gethostname() # Get local machine name
-        self.port = 12345                # Reserve a port for your service.
+        self.host = server_ip # Get local machine name
+        #print(socket.gethostbyname(socket.gethostname()))
+        self.port = server_port               # Reserve a port for your service.
         self.s.bind((self.host, self.port))        # Bind to the port
         self.s.listen(5)                 # Now wait for client connection.
         self.working = True
