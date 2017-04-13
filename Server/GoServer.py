@@ -95,9 +95,7 @@ class GoServer:
                             c1, c2 = self.clients[state.name1].c, self.clients[state.name2].c
                             self.snd(c1, t)
                             self.snd(c2, t)
-                            print('checking following game')
                             if not state.can_any_go():
-                                print('game over for ' + cl.name)
                                 a, b = state.count_answer()
                                 looser = state.name2 if a > b else state.name1
                                 self.lose(looser)

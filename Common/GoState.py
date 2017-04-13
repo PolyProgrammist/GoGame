@@ -25,15 +25,10 @@ class GoState:
     odj = [1, 0, -1, 0]
 
     def is_suicide(self, t):
-        print('checking suicide ' + str(t))
         self.was = [[False] * (self.board_size + 1) for _ in range(self.board_size + 1)]
         self.places[t[0]][t[1]] = self.now_color
         tmp =  not self.dfs_free(t, self.now_color)
         self.places[t[0]][t[1]] = self.freez
-        print('suicide is ' + str(tmp))
-        if tmp:
-            print(self.was)
-            print(self.places)
         return tmp
 
     def handle_kills(self, t):
@@ -78,13 +73,10 @@ class GoState:
         for i in range(self.board_size + 1):
             for j in range(self.board_size + 1):
                 if self.places[i][j] == self.freez and not self.is_suicide((i, j)):
-                    print('can_go')
                     return True
-        print('not_can')
         return False
 
     def count_answer(self):
-        print('answer counting')
         was0 = self.fill_field_answer(0)
         was1 = self.fill_field_answer(1)
         a = b = 0

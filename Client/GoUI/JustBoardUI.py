@@ -17,7 +17,6 @@ class JustBoardUI(QWidget):
     def __init__(self, maingo, board_display_size, gameWidget):
         super().__init__()
         self.gost = GoState.GoState()
-        self.gost.places = [[-1, 1, 1, 1, -1, 1, -1, 1, -1, 1], [0, 0, 0, 0, 1, 1, 1, -1, 1, 1], [0, 0, 1, 1, 1, -1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1, -1, 1], [0, 0, 1, 0, 1, 1, 1, 1, 1, 1], [0, 0, 1, 0, 0, 0, 1, 1, 1, 1], [0, 0, 0, 0, 0, 1, 1, 1, 1, -1], [0, 0, 0, 0, 0, 1, 1, 1, 1, 0], [-1, 0, 0, 0, 0, 1, 0, 0, 0, 0], [0, 0, 0, 0, -1, 0, 0, 0, 0, 0]]
         self.board_places = self.gost.board_size + 1
         self.gameWidget = gameWidget
         self.maingo = maingo
@@ -65,11 +64,6 @@ class JustBoardUI(QWidget):
         self.gost.try_pas(t, self.gost.now_color)
         self.gameWidget.change_step_widget()
         self.update()
-        for i in self.gost.places:
-            for j in i:
-                print(j, end=' ')
-            print('')
-        print('')
 
     def printtable(self):
         for i in self.places:

@@ -32,7 +32,7 @@ class Timer:
         self.updui()
         #hack
         if self.sec == 0 and self.maingo.protor.step == self.turn:
-            #self.maingo.protor.surrender()
+            self.maingo.protor.surrender()
             self.timer.stop()
 
     def go(self):

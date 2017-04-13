@@ -10,7 +10,7 @@ import Client.Connection.FalseConnect
 class GoMain:
     def __init__(self):
         self.goui = GOQT(self)
-        self.protor = Client.Connection.FalseConnect.Protogo(self)
+        self.protor = Client.Connection.GoProto.Protogo(self)
 
 
 sys._excepthook = sys.excepthook
