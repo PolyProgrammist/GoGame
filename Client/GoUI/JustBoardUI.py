@@ -17,6 +17,7 @@ class JustBoardUI(QWidget):
     def __init__(self, maingo, board_display_size, gameWidget):
         super().__init__()
         self.gost = GoState.GoState()
+        self.gost.places = [[-1, 1, 1, 1, -1, 1, -1, 1, -1, 1], [0, 0, 0, 0, 1, 1, 1, -1, 1, 1], [0, 0, 1, 1, 1, -1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1, -1, 1], [0, 0, 1, 0, 1, 1, 1, 1, 1, 1], [0, 0, 1, 0, 0, 0, 1, 1, 1, 1], [0, 0, 0, 0, 0, 1, 1, 1, 1, -1], [0, 0, 0, 0, 0, 1, 1, 1, 1, 0], [-1, 0, 0, 0, 0, 1, 0, 0, 0, 0], [0, 0, 0, 0, -1, 0, 0, 0, 0, 0]]
         self.board_places = self.gost.board_size + 1
         self.gameWidget = gameWidget
         self.maingo = maingo
@@ -46,7 +47,7 @@ class JustBoardUI(QWidget):
         t = self.analyze_pos(self.point_to_tuple(QMouseEvent.pos()))
         if (t[0] != self.gost.freez and self.gost.places[t[0]][t[1]] == self.gost.freez):
             self.need_now_stone = True
-            self.now_stone_pos = (self.gap_size + t[0] * self.cell_size, self.full_add + t[1] * self.cell_size)
+            self.now_stone_pos = (self.get_gui_coords(t))
         else:
             self.need_now_stone = False
         self.update()
@@ -64,6 +65,11 @@ class JustBoardUI(QWidget):
         self.gost.try_pas(t, self.gost.now_color)
         self.gameWidget.change_step_widget()
         self.update()
+        for i in self.gost.places:
+            for j in i:
+                print(j, end=' ')
+            print('')
+        print('')
 
     def printtable(self):
         for i in self.places:
@@ -85,7 +91,7 @@ class JustBoardUI(QWidget):
         if (a == self.gost.freez or b == self.gost.freez):
             return self.gost.freez, self.gost.freez
         else:
-            return a, b
+            return b, a
 
     def recreate(self):
         self.setFixedSize(self.board_display_size, self.full_display_height)
@@ -107,6 +113,9 @@ class JustBoardUI(QWidget):
     def get_Qrect(self, x, y, r):
         return QRect(x - r, y - r, 2 * r, 2 * r)
 
+    def get_gui_coords(self, t):
+        return self.full_add + t[1] * self.cell_size, self.gap_size + t[0] * self.cell_size
+
 
     def redraw_background(self, painter):
         painter.drawLine(self.gap_size, self.full_add, self.gap_size, self.ungap_coordY)
@@ -127,7 +136,7 @@ class JustBoardUI(QWidget):
         for i in range(self.board_places):
             for j in range(self.board_places):
                 if self.gost.places[i][j] != self.gost.freez:
-                    x, y, r = self.gap_size + i * self.cell_size, self.full_add + j * self.cell_size,self.stone_radius
+                    x, y, r = *self.get_gui_coords((i, j)),self.stone_radius
                     cl = self.stone_Q_color[self.gost.places[i][j]]
                     painter.setBrush(cl)
                     painter.drawEllipse(self.get_Qrect(x, y, r))

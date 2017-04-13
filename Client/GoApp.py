@@ -2,14 +2,15 @@ import sys
 
 from PyQt5.QtWidgets import QApplication
 
-from Client.Connection.GoProto import Protogo
+import Client.Connection.GoProto
 from Client.GoUI.GoWindows import GOQT
+import Client.Connection.FalseConnect
 
 
 class GoMain:
     def __init__(self):
         self.goui = GOQT(self)
-        self.protor = Protogo(self)
+        self.protor = Client.Connection.FalseConnect.Protogo(self)
 
 
 sys._excepthook = sys.excepthook
