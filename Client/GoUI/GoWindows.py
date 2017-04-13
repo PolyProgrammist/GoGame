@@ -60,7 +60,6 @@ class AuthorizeWidget(QWidget):
 
     def authorizeLayout(self):
         btnok = QPushButton("OK")
-        btnGoGuest = QPushButton("Go guest")
         tfName = QLineEdit()
         tfName.setPlaceholderText('Enter the name')
         tfName.setMaxLength(16)
@@ -68,7 +67,6 @@ class AuthorizeWidget(QWidget):
         vl = QVBoxLayout()
         vl.addWidget(tfName)
         vl.addWidget(btnok)
-        vl.addWidget(btnGoGuest)
         btnok.clicked.connect(lambda: self.changeWidget(tfName))
         return vl
 
